@@ -3,7 +3,7 @@ A self-contained Redux state management library
 
 Note: unfortunately, *npm-redux-interfaces* does **not** currently support server-side rendering. It's something on the radar
 
-## Section: 1 - [How to use]:
+## [#1] - How to use:
 
 **In the `index.js` file of your interfaces folder:**
 
@@ -92,7 +92,7 @@ ri.trigger(ri.dispatch.app.RENDER(true));
 const renderReducer = ri.getReducer('app.RENDER').getValue(); //true
 ```
 
-## Section: 2 - [Documentation]:
+## [#2] - API:
 ## ri.connectInterface([*string*], [*object*]):
 - This method connects your interface to the library allowing you to interact with it's action/reducer API
 
@@ -192,12 +192,12 @@ ri.setStore(store);
 
 `const renderReducer = ri.getReducer('app.RENDER').getValue();`
 
-## Section: 3 - [Dependencies]:
+## [#3] - Dependencies:
 1. **redux**
 2. **redux-thunk**
 
-## Section: 4 - [Author]:
+## [#4] - Author:
 -**Dane Sirois**
 
-## Section: 5 - [License]:
+## [#5] - License:
 -**MIT**
