@@ -1,5 +1,5 @@
 {
-  "name": "redux-interfaces",
+  "name": "npm-redux-interfaces",
   "version": "1.0.1",
   "description": "A self-contained Redux state management library",
   "main": "lib/index.js",
