@@ -1,6 +1,6 @@
 {
   "name": "redux-interfaces",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A self-contained Redux state management library",
   "main": "lib/index.js",
   "scripts": {
