@@ -4,12 +4,14 @@ A self contained Redux state management library
 **Dispatch actions through an interface from anywhere:**
 ```
 import { RI } from 'npm-redux-interfaces';
+
 RI.app.RENDER(true);
 ```
 
 **Access reducer state through an interface from anywhere:**
 ```
 import { RI } from 'npm-redux-interfaces';
+
 RI.app.render().getState();
 ```
 
@@ -43,7 +45,7 @@ Unfortunately, *npm-redux-interfaces* does **not** currently support server-side
 
     - `export const root_reducer = RI.getRootReducer();`
     
-**example:**
+**/interfaces/index.js:**
 ```
 import { RI } from 'npm-redux-interfaces';
 import App_interface from './App/App_interface';
@@ -71,7 +73,7 @@ export const root_reducer = RI.getRootReducer();
 
     - `RI.setStore(store);`
 
-**example:**
+**/index.js:**
 ```
 import { RI } from 'npm-redux-interfaces';
 import { root_reducer } from './interfaces/index.js';
@@ -85,32 +87,31 @@ RI.setStore(store);
 
 Now that everything is hooked up, adding a new interface is easy:
 
-**interfaces/index.js**:
+**/interfaces/index.js**:
 ```
 import Auth_interface from './Auth/Auth_interface';
 
-RI.connectInterface("Auth", Auth_interface);
+RI.connectInterface("auth", Auth_interface);
 ```
 
 The library takes care of hooking everything else up for you.
 
 You should now be able to access and interact with your interface from anywhere within your application:
 
+**/components/loginForm.js:**
 ```
 import { RI } from 'npm-redux-interfaces';
 
-// Dispatching an action:
-RI.app.RENDER(true);
+RI.auth.LOGIN({username: "dane", password: "abc123"});
 
-// Accessing a reducer:
-const renderReducer = RI.app.render().getValue();
+const loggedInReducer = RI.auth.loggedIn().getState();
 ```
 
 ## API:
 ## RI.connectInterface([*string*], [*object*]):
 - This method connects your interface to the library allowing you to interact with it's action/reducer API
 
-**Arguments**(*interface_name*, *interface_object*):
+**Arguments**([*interface_name*], [*interface_object*]):
  
 1. [*interface_name*]:
     - A string which gets used as part of the path for interacting with your interface
@@ -136,10 +137,10 @@ const renderReducer = RI.app.render().getValue();
 `export const root_reducer = RI.getRootReducer();`
 
 ## RI.setStore([*object*]):
-- This method gives the library access to the store, allowing it to internally dispatch actions and access reducer state
+- This method gives the library access to the redux store allowing it to internally dispatch actions and access reducer state
 - Immediately after creating your Redux store, pass it in to the `RI.setStore()` method
 
-**Arguments**(*store*):
+**Arguments**([*store*]):
 
 1. [*store*]:
     - The object created when initializing your Redux store inside of your app's root level `index.js` file
