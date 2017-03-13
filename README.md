@@ -167,7 +167,6 @@ RI.setStore(store);
 
 ## Dependencies:
 1. **redux**
-2. **redux-thunk**
 
 ## Author:
 **Dane Sirois**
