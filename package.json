@@ -1,7 +1,7 @@
 {
-  "name": "redux-interfaces",
-  "version": "1.0.0",
-  "description": "A self-contained Redux state management library",
+  "name": "npm-redux-interfaces",
+  "version": "2.0.2",
+  "description": "A self contained Redux state management library",
   "main": "lib/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
