@@ -89,7 +89,7 @@ You should now be able to access and interact with your interface from anywhere 
 import { RI } from 'npm-redux-interfaces';
 
 // Dispatching an action:
-RI.app.RENDER(true));
+RI.app.RENDER(true);
 
 // Accessing a reducer:
 const renderReducer = RI.app.render().getValue();
