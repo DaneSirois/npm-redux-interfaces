@@ -1,9 +1,20 @@
 # NPM-Redux-Interfaces: 
 A self contained Redux state management library
 
-Note: 
+**Dispatch actions through an interface from anywhere:**
+```
+import { RI } from 'npm-redux-interfaces';
+RI.app.RENDER(true);
+```
 
-unfortunately, *npm-redux-interfaces* does **not** currently support server-side rendering. It's something on the radar.
+**Access reducer state through an interface from anywhere:**
+```
+import { RI } from 'npm-redux-interfaces';
+RI.app.render().getState();
+```
+
+**Note:**
+Unfortunately, *npm-redux-interfaces* does **not** currently support server-side rendering. It's something I'm looking into.
 
 ## Index:
 1. [Configuration](#configuration)
