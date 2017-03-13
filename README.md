@@ -1,15 +1,24 @@
 # NPM-Redux-Interfaces: 
-A self-contained Redux state management library
+A self contained Redux state management library
 
-Note: unfortunately, *npm-redux-interfaces* does **not** currently support server-side rendering. It's something on the radar
+Note: 
 
-## Section: 1 - [How to use]:
+unfortunately, *npm-redux-interfaces* does **not** currently support server-side rendering. It's something on the radar.
+
+## Index:
+1. [Configuration](#configuration)
+2. [API](#api)
+3. [Dependencies](#dependencies)
+4. [Author](#author)
+5. [License](#license)
+
+## Configuration:
 
 **In the `index.js` file of your interfaces folder:**
 
 1. Import the *redux-interfaces* library:
 
-    - `import { ri } from 'npm-redux-interfaces';`
+    - `import { RI } from 'npm-redux-interfaces';`
     
 2. Import your interfaces:
 
@@ -17,27 +26,27 @@ Note: unfortunately, *npm-redux-interfaces* does **not** currently support serve
     
 3. Connect your interfaces:
 
-    - `ri.connectInterface("app", App_interface);`
+    - `RI.connectInterface("app", App_interface);`
     
 4. Export the *root_reducer*:
 
-    - `export const root_reducer = ri.getRootReducer();`
+    - `export const root_reducer = RI.getRootReducer();`
     
 **example:**
 ```
-import { ri } from 'npm-redux-interfaces';
+import { RI } from 'npm-redux-interfaces';
 import App_interface from './App/App_interface';
 
-ri.connectInterface("app", App_interface);
+RI.connectInterface("app", App_interface);
 
-export const root_reducer = ri.getRootReducer();
+export const root_reducer = RI.getRootReducer();
 ```
 
 **In the `index.js` file where you initialize your Redux store:**
 
 1. Import the *redux-interfaces* library:
 
-    - `import { ri } from 'npm-redux-interfaces';`
+    - `import { RI } from 'npm-redux-interfaces';`
     
 2. Import the *root_reducer*:
 
@@ -49,51 +58,45 @@ export const root_reducer = ri.getRootReducer();
     
 4. Pass in reference to the store:
 
-    - `ri.setStore(store);`
+    - `RI.setStore(store);`
 
 **example:**
 ```
-import { ri } from 'npm-redux-interfaces';
+import { RI } from 'npm-redux-interfaces';
 import { root_reducer } from './interfaces/index.js';
 
 const store = applyMiddleware(...middleware)(createStore)(root_reducer);
 
-ri.setStore(store);
+RI.setStore(store);
 ```
 
 **That's it!**
 
 Now that everything is hooked up, adding a new interface is easy:
 
-
-1. Import your interface into the `interfaces/index.js` file
-
-2. Call `ri.connectInterface()` passing in a reference to your interface object
-
-
-*interfaces/index.js*:
+**interfaces/index.js**:
 ```
 import Auth_interface from './Auth/Auth_interface';
 
-ri.connectInterface("Auth", Auth_interface);
+RI.connectInterface("Auth", Auth_interface);
 ```
 
 The library takes care of hooking everything else up for you.
 
-You should now be able to access and interact with your interface from anywhere within your application.
+You should now be able to access and interact with your interface from anywhere within your application:
 
-
-**Example**:
 ```
-import { ri } from 'npm-redux-interfaces';
+import { RI } from 'npm-redux-interfaces';
 
-ri.trigger(ri.dispatch.app.RENDER(true));
+// Dispatching an action:
+RI.app.RENDER(true));
 
-const renderReducer = ri.getReducer('app.RENDER').getValue(); //true
+// Accessing a reducer:
+const renderReducer = RI.app.render().getValue();
 ```
 
-## Section: 2 - [Documentation]:
-## ri.connectInterface([*string*], [*object*]):
+## API:
+## RI.connectInterface([*string*], [*object*]):
 - This method connects your interface to the library allowing you to interact with it's action/reducer API
 
 **Arguments**(*interface_name*, *interface_object*):
@@ -107,9 +110,9 @@ const renderReducer = ri.getReducer('app.RENDER').getValue(); //true
 
 **Example**:
 
-`ri.connectInterface("app", App_interface);`
+`RI.connectInterface("app", App_interface);`
 
-## ri.getRootReducer():
+## RI.getRootReducer():
 - This method returns the *root_reducer* for your app
 - Usually you will want to immediately export the result of calling this function for use when defining your store
 
@@ -119,11 +122,11 @@ const renderReducer = ri.getReducer('app.RENDER').getValue(); //true
 
 **Example**:
 
-`export const root_reducer = ri.getRootReducer();`
+`export const root_reducer = RI.getRootReducer();`
 
-## ri.setStore([*object*]):
+## RI.setStore([*object*]):
 - This method gives the library access to the store, allowing it to internally dispatch actions and access reducer state
-- Immediately after creating your Redux store, pass it in to the `ri.setStore()` method
+- Immediately after creating your Redux store, pass it in to the `RI.setStore()` method
 
 **Arguments**(*store*):
 
@@ -137,67 +140,26 @@ const renderReducer = ri.getReducer('app.RENDER').getValue(); //true
 ```
 const store = applyMiddleware(...middleware)(createStore)(root_reducer);`
 
-ri.setStore(store);
+RI.setStore(store);
 ```
 
-## ri.getStore():
-- This method returns the Redux store object passed in from `ri.setStore()`
+## RI.getStore():
+- This method returns the Redux store passed in from `RI.setStore()`
 
 **Example**:
 
-`const reduxStore = ri.getStore()`
+`const reduxStore = RI.getStore()`
 
 **Arguments**():
 
 **Returns**: [*OBJECT*]
 
-## ri.trigger([*function*]):
-- This method is how you dispatch an action in *redux-interfaces*
-- `ri.trigger()` doesn't actually dispatch the action, but instead triggers a request to
-    - The actual dispatching of the action takes place from within the *actions* object of your interface file
-
-**Arguments**(*action*):
-
-1. [*action*]:
-    - Takes the path to an action as an argument
-    
-**Returns**: [*NULL*]
-
-**Example**:
-
-`ri.trigger(ri.dispatch.app.RENDER(true));`
-
-## ri.getReducer([*string*]):
-- This method gives you access to the state stored in an instance of one of your reducers
-- This method is chainable
-
-**Arguments**(*reducer_path*):
-
-1. [*reducer_path*]:
-    - Takes a path to the reducer as an argument
-
-**Returns**: [*OBJECT*]:
-
-```
-{
-  getValue()
-}
-```
-
-**Chainable Methods**:
-
-1. `.getValue()` - returns the current value stored in the reducers state
-
-**Example**:
-
-`const renderReducer = ri.getReducer('app.RENDER').getValue();`
-
-## Section: 3 - [Dependencies]:
+## Dependencies:
 1. **redux**
 2. **redux-thunk**
 
-## Section: 4 - [Author]:
--**Dane Sirois**
+## Author:
+**Dane Sirois**
 
-## Section: 5 - [License]:
--**MIT**
+## License:
+**MIT**
