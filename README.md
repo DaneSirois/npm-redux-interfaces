@@ -149,6 +149,7 @@ This method gives the library access to your redux store allowing it to internal
 - Immediately after instantiating your Redux store, pass in reference to it with this method.
 
 **Arguments**([1]):
+
 1. [*store*]:
     - The object created upon instantiating your Redux store from inside of your app's root `index.js` file.
 
