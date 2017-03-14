@@ -1,7 +1,6 @@
 # NPM-Redux-Interfaces 
 -A self contained Redux state management library
 
-***
 ## Index:
 1. [Configuration](#configuration)
 2. [API](#api)
