@@ -1,85 +1,59 @@
 # NPM-Redux-Interfaces 
 -A self contained Redux state management library
 
-**why interfaces?**
+**Why interfaces?**
 
 - They provide a scalable architecture for organizing and interacting with application state.
 - It allows your state, and the methods to interact with that state to exist independently from the rest your application. It's built on the concept of modularity.
 - It gives you control over your data so that you can interact with it on your own terms. No more conforming to bindings like `mapDispatchToProps()`.
 
-## Index:
-1. [Configuration](#configuration)
-2. [API](#api)
-3. [Dependencies](#dependencies)
-4. [Author](#author)
-5. [License](#license)
-
-**Dispatch actions through an interface:**
-```
-import { RI } from 'npm-redux-interfaces';
-
-// Dispatch an action:
-RI.app.RENDER(true);
-```
-
-**Access reducer state through an interface:**
-```
-import { RI } from 'npm-redux-interfaces';
-
-// Access a reducer:
-RI.app.render().getState();
-```
-
 **Note:**
-Unfortunately, *NPM-Redux-Interfaces* does **not** currently support server-side rendering. It's something I'm looking into.
+-Unfortunately, *NPM-Redux-Interfaces* does **not** currently support server-side rendering. It's something I'm looking into.
 
-## Configuration:
+## Index:
+1. [Usage:](#usage:)
+2. [Configuring the Library:](#configuring-the-library:)
+3. [Defining an Interface:](#defining-an-interface:)
+4. [API:](#api:)
+5. [Dependencies:](#dependencies:)
+6. [Author:](#author:)
+7. [License:](#license:)
 
-**In the `index.js` file of your interfaces folder:**
+***
+## Usage:
+**Dispatching actions through an interface:**
+```
+import { RI } from 'npm-redux-interfaces';
 
-1. Import the library:
+// Dispatching an action:
+RI.auth.LOGIN({...});
+```
 
-    - `import { RI } from 'npm-redux-interfaces';`
-    
-2. Import your interfaces:
+**Accessing reducer state through an interface:**
+```
+import { RI } from 'npm-redux-interfaces';
 
-    - `import App_interface from './App/App_interface';`
-    
-3. Connect your interfaces:
+// Accessing a reducer:
+RI.auth.loggedIn().getState();
+```
 
-    - `RI.connectInterface('app', App_interface);`
-    
-4. Get and export the *root_reducer*:
+***
+## Configuring the Library:
+First, create an **/interfaces** folder in the same directory that you define your redux store.
 
-    - `export const root_reducer = RI.getRootReducer();`
-    
+Next, create an `index.js` file within your new interfaces folder. This file is where you will both import, and connect each one of your interfaces from. This is also the spot where you will retreive and export your *root_reducer*:
+
 **/interfaces/index.js:**
 ```
 import { RI } from 'npm-redux-interfaces';
-import App_interface from './App/App_interface';
+import Auth_interface from './Auth/Auth_interface';
 
-RI.connectInterface('app', App_interface);
+RI.connectInterface('auth', Auth_interface);
 
 export const root_reducer = RI.getRootReducer();
 ```
 
-**In the `index.js` file where you initialize your Redux store:**
-
-1. Import the library:
-
-    - `import { RI } from 'npm-redux-interfaces';`
-    
-2. Import the *root_reducer*:
-
-    - `import { root_reducer } from './interfaces/index.js';`
-    
-3. Build the Redux store:
-
-    - `const store = applyMiddleware(...middleware)(createStore)(root_reducer);`
-    
-4. Pass reference to the library:
-
-    - `RI.setStore(store);`
+Now what you are going to want to do is head back over to your root level `index.js` file and create your store. After defining the store, you are going to want to give the library access to it. Doing so gives the libray access to your reducers, as well as the ability to dispatch actions:
 
 **/index.js:**
 ```
@@ -87,34 +61,40 @@ import { RI } from 'npm-redux-interfaces';
 import { root_reducer } from './interfaces/index.js';
 
 const store = applyMiddleware(...middleware)(createStore)(root_reducer);
-
 RI.setStore(store);
 ```
 
-**That's it!**
+***
+## Defining an Interface:
+Defining an interface is simple!
 
-Now that everything is hooked up, adding a new interface is easy:
+First, create a new folder for your interface inside of your **/interfaces** folder. 
+- (It's convention to make the first letter of the name a capital -- ex: `Auth`).
 
-**/interfaces/index.js**:
+Inside of this new folder, create both an `actions`, and `reducers` sub-folder. In case you haven't already guessed, this is where your actions and reducers for the interface will live. 
+
+Now, create an entry file for your interface. This is where you will build and expose it's public API:
+
+**/interfaces/Auth/Auth_interface.js**:
 ```
-import Auth_interface from './Auth/Auth_interface';
+//[1] Actions:
+import Auth_LOGIN from './actions/Auth_LOGIN.js';
 
-RI.connectInterface('auth', Auth_interface);
+//[2] Reducers:
+import Auth_loggedIn from './reducers/Auth_loggedIn.js';
+
+//[3] API:
+export default {
+  actions: {
+    LOGIN: (creds) => Auth_LOGIN(creds)
+  },
+  reducers: {
+    loggedIn: Auth_loggedIn
+  }
+}; 
 ```
 
-The library takes care of hooking everything else up for you.
-
-You should now have access, along with the ability to interact with your interface from anywhere within your application:
-
-**/components/loginForm.js:**
-```
-import { RI } from 'npm-redux-interfaces';
-
-RI.auth.LOGIN({username: 'user1', password: 'abc123'});
-
-const loggedIn_reducer = RI.auth.loggedIn().getState();
-```
-
+***
 ## API:
 ## RI.connectInterface([*string*], [*object*]):
 This method connects your interface to the library allowing you to interact with it's internal API.
