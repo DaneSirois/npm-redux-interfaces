@@ -1,6 +1,12 @@
 # NPM-Redux-Interfaces 
 -A self contained Redux state management library
 
+**why interfaces?**
+
+- They provide a scalable architecture for organizing and interacting with application state.
+- It allows your state, and the methods to interact with that state to exist independently from the rest your application. It's built on the concept of modularity.
+- It gives you control over your data so that you can interact with it on your own terms. No more conforming to bindings like `mapDispatchToProps()`.
+
 ## Index:
 1. [Configuration](#configuration)
 2. [API](#api)
