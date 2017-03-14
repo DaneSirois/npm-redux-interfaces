@@ -1,6 +1,7 @@
 # NPM-Redux-Interfaces 
 -A self contained Redux state management library
 
+***
 ## Index:
 1. [Configuration](#configuration)
 2. [API](#api)
@@ -41,7 +42,7 @@ Unfortunately, *NPM-Redux-Interfaces* does **not** currently support server-side
     
 3. Connect your interfaces:
 
-    - `RI.connectInterface("app", App_interface);`
+    - `RI.connectInterface('app', App_interface);`
     
 4. Get and export the *root_reducer*:
 
@@ -52,7 +53,7 @@ Unfortunately, *NPM-Redux-Interfaces* does **not** currently support server-side
 import { RI } from 'npm-redux-interfaces';
 import App_interface from './App/App_interface';
 
-RI.connectInterface("app", App_interface);
+RI.connectInterface('app', App_interface);
 
 export const root_reducer = RI.getRootReducer();
 ```
@@ -93,18 +94,18 @@ Now that everything is hooked up, adding a new interface is easy:
 ```
 import Auth_interface from './Auth/Auth_interface';
 
-RI.connectInterface("auth", Auth_interface);
+RI.connectInterface('auth', Auth_interface);
 ```
 
 The library takes care of hooking everything else up for you.
 
-You should now have access, with the ability to interact with your interface from anywhere within your application:
+You should now have access, along with the ability to interact with your interface from anywhere within your application:
 
 **/components/loginForm.js:**
 ```
 import { RI } from 'npm-redux-interfaces';
 
-RI.auth.LOGIN({username: "user1", password: "abc123"});
+RI.auth.LOGIN({username: 'user1', password: 'abc123'});
 
 const loggedIn_reducer = RI.auth.loggedIn().getState();
 ```
@@ -122,6 +123,7 @@ This method connects your interface to the library allowing you to interact with
     - An object containing the API of your interface.
 
 **Returns**: [*null*]
+
 **Example**:
 ```
 RI.connectInterface('app', App_interface);
@@ -133,7 +135,9 @@ This method returns the *root_reducer* for your app.
 - Usually you will want to immediately export the result of calling this method for use when defining your store.
 
 **Arguments**(): [none]
+
 **Returns**: [*function*]
+
 **Example**:
 ```
 export const root_reducer = RI.getRootReducer();
@@ -149,6 +153,7 @@ This method gives the library access to your redux store allowing it to internal
     - The object created upon instantiating your Redux store from inside of your app's root `index.js` file.
 
 **Returns**: [*null*]
+
 **Example**:
 ```
 const store = applyMiddleware(...middleware)(createStore)(root_reducer);`
@@ -160,7 +165,9 @@ RI.setStore(store);
 This method returns the store object initially passed in from the `RI.setStore()` method.
 
 **Arguments**():
+
 **Returns**: [*object*]
+
 **Example**:
 `const reduxStore = RI.getStore()`
 
