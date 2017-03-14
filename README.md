@@ -8,16 +8,16 @@
 - It gives you control over your data so that you can interact with it on your own terms. No more conforming to bindings like `mapDispatchToProps()`.
 
 **Note:**
--Unfortunately, *NPM-Redux-Interfaces* does **not** currently support server-side rendering. It's something I'm looking into.
+unfortunately, *NPM-Redux-Interfaces* does **not** currently support server-side rendering. It's something I'm looking into.
 
 ## Index:
-1. [Usage:](#usage:)
-2. [Configuring the Library:](#configuring-the-library:)
-3. [Defining an Interface:](#defining-an-interface:)
-4. [API:](#api:)
-5. [Dependencies:](#dependencies:)
-6. [Author:](#author:)
-7. [License:](#license:)
+1. [Usage:](#usage)
+2. [Configuring the Library:](#configuring-the-library)
+3. [Defining an Interface:](#defining-an-interface)
+4. [API:](#api)
+5. [Dependencies:](#dependencies)
+6. [Author:](#author)
+7. [License:](#license)
 
 ***
 ## Usage:
@@ -77,13 +77,13 @@ Now, create an entry file for your interface. This is where you will build and e
 
 **/interfaces/Auth/Auth_interface.js**:
 ```
-//[1] Actions:
+// Actions:
 import Auth_LOGIN from './actions/Auth_LOGIN.js';
 
-//[2] Reducers:
+// Reducers:
 import Auth_loggedIn from './reducers/Auth_loggedIn.js';
 
-//[3] API:
+// API:
 export default {
   actions: {
     LOGIN: (creds) => Auth_LOGIN(creds)
