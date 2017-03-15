@@ -18,23 +18,19 @@ const _store = ((initial = null) => {
 })();
 
 const _reducers = ((initial = null) => {
-  let rootReducer = initial;
+  let reducerObj = {};
+  let root_reducer = initial;
 
   return {
     mount: (name, reducers) => {
       const newReducers = {};
       newReducers[name] = reducers;
+      reducerObj = Object.assign(reducerObj, newReducers);
 
-      if (rootReducer) {
-        return rootReducer = combineReducers( rootReducer, newReducers );
-      }
-
-      rootReducer = {};
-      rootReducer[name] = newReducers[name];
-      return rootReducer = combineReducers(rootReducer);
+      return root_reducer = combineReducers(reducerObj);
     },
     getRootReducer: () => {
-      return rootReducer;
+      return root_reducer;
     }
   }
 })();
@@ -53,7 +49,7 @@ const _connectInterface = (name, interfaceObj) => {
     // Build the actions:
     let actionsObj = {};
 
-    Object.keys(interfaceObj.actions).forEach((action) => {    
+    Object.keys(interfaceObj.actions).forEach((action) => {
       actionsObj[action] = (payload) => {
         return _dispatach(interfaceObj.actions[action](payload));
       };
@@ -72,6 +68,7 @@ const _connectInterface = (name, interfaceObj) => {
       };
     });
 
+    console.log(interfaceObj);
     _reducers.mount(name, combineReducers(interfaceObj.reducers));
 
     // Build the interface:
@@ -82,7 +79,6 @@ const _connectInterface = (name, interfaceObj) => {
   }
   const errorMsg = `Interface '${name}' is already in use. Try a different name..`;
 
-  console.log(errorMsg);
   return { message: errorMsg };
 };
 
