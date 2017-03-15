@@ -53,7 +53,7 @@ const _connectInterface = (name, interfaceObj) => {
     // Build the actions:
     let actionsObj = {};
 
-    Object.keys(interfaceObj.actions).forEach((action) => {    
+    Object.keys(interfaceObj.actions).forEach((action) => {
       actionsObj[action] = (payload) => {
         return _dispatach(interfaceObj.actions[action](payload));
       };
