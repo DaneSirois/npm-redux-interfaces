@@ -68,7 +68,6 @@ const _connectInterface = (name, interfaceObj) => {
       };
     });
 
-    console.log(interfaceObj);
     _reducers.mount(name, combineReducers(interfaceObj.reducers));
 
     // Build the interface:
@@ -79,6 +78,7 @@ const _connectInterface = (name, interfaceObj) => {
   }
   const errorMsg = `Interface '${name}' is already in use. Try a different name..`;
 
+  console.log(errorMsg);
   return { message: errorMsg };
 };
 
