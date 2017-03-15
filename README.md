@@ -1,5 +1,5 @@
 # NPM-Redux-Interfaces
--a self contained Redux state management library
+-A self contained Redux state management library
 
 **Why interfaces?**
 
