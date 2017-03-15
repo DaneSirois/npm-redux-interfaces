@@ -1,5 +1,5 @@
-# NPM-Redux-Interfaces 
--A self contained Redux state management library
+# NPM-Redux-Interfaces
+-a self contained Redux state management library
 
 **Why interfaces?**
 
@@ -21,7 +21,9 @@ unfortunately, *NPM-Redux-Interfaces* does **not** currently support server-side
 
 ***
 ## Usage:
-**Dispatching actions through an interface:**
+Assuming you have a preconfigured interface named **auth**:
+
+**Dispatching actions through it:**
 ```
 import { RI } from 'npm-redux-interfaces';
 
@@ -29,7 +31,7 @@ import { RI } from 'npm-redux-interfaces';
 RI.auth.LOGIN({...});
 ```
 
-**Accessing reducer state through an interface:**
+**Accessing reducer state through it:**
 ```
 import { RI } from 'npm-redux-interfaces';
 
@@ -41,7 +43,7 @@ RI.auth.loggedIn().getState();
 ## Configuring the Library:
 First, create an **/interfaces** folder in the same directory that you define your redux store.
 
-Next, create an `index.js` file within your new interfaces folder. This file is where you will both import, and connect each one of your interfaces from. This is also the spot where you will retreive and export your *root_reducer*:
+Next, create an **index.js** file within your new interfaces folder. This file is where you will both import, and connect each one of your interfaces from. This is also the spot where you will retreive and export your *root_reducer*:
 
 **/interfaces/index.js:**
 ```
@@ -53,7 +55,7 @@ RI.connectInterface('auth', Auth_interface);
 export const root_reducer = RI.getRootReducer();
 ```
 
-Now what you are going to want to do is head back over to your root level `index.js` file and create your store. After defining the store, you are going to want to give the library access to it. Doing so gives the libray access to your reducers, as well as the ability to dispatch actions:
+Now, head back over to your root level **index.js** file and create your store. After defining the store, you are going to want to give the library access to it. Doing so gives the libray access to your reducers, as well as the ability to dispatch actions:
 
 **/index.js:**
 ```
@@ -68,12 +70,49 @@ RI.setStore(store);
 ## Defining an Interface:
 Defining an interface is simple!
 
-First, create a new folder for your interface inside of your **/interfaces** folder. 
-- (It's convention to make the first letter of the name a capital -- ex: `Auth`).
+First, create a new folder for your interface inside of your **/interfaces** directory.
+- It's convention to make the first letter of the interfaces name a capital -- ex: **Auth**.
 
-Inside of this new folder, create both an `actions`, and `reducers` sub-folder. In case you haven't already guessed, this is where your actions and reducers for the interface will live. 
+Inside of this new folder, create a **types** file for use inside of your actions and reducers:
 
-Now, create an entry file for your interface. This is where you will build and expose it's public API:
+**/interfaces/Auth/Auth_types.js**:
+```
+export const type__LOGIN = 'type__LOGIN';
+```
+- The use of double underscores is optional. However, I personally think having that visual distinction makes your actions and reducers more readable
+
+Next, create both an **actions**, and **reducers** sub-folder. In case you haven't already guessed, this is where your actions and reducers for the interface will live:
+
+**/interfaces/Auth/actions/Auth_LOGIN.js**:
+```
+import { type__LOGIN } from '../Auth_types.js';
+
+const Auth_LOGIN = (creds) => {
+  return {
+    type: type__LOGIN,
+    payload: creds
+  }
+}
+
+export default Auth_LOGIN;
+```
+**/interfaces/Auth/reducers/Auth_loggedIn.js**:
+```
+import { type__LOGIN } from '../Auth_types.js';
+
+const Auth_loggedIn = (state = false, action) => {
+  switch(action.type) {
+    case 'type__LOGIN':
+      return action.payload;
+    default:
+      return state;
+  };
+};
+
+export default Auth_loggedIn;
+```
+
+Finally, create the entry point for your interface. This is where you will build and expose it's public API:
 
 **/interfaces/Auth/Auth_interface.js**:
 ```
@@ -91,8 +130,15 @@ export default {
   reducers: {
     loggedIn: Auth_loggedIn
   }
-}; 
+};
 ```
+- Give note to the naming convention; Actions **must** be named in all caps. This is how you tell them apart from your reducers. Failure to do so will inevitably result in naming conflicts.
+
+If you followed all the steps correctly, you should now how have a directory which mimics the following:
+
+![Auth_interface](http://imgur.com/G2JYNO1.png)
+
+**Thats it!**
 
 ***
 ## API:
@@ -101,7 +147,7 @@ This method connects your interface to the library allowing you to interact with
 - As convention, name your interfaces in lowercase.
 
 **Arguments**([*1*], [*2*]):
- 
+
 1. [*interface_name*]:
     - A string which gets used as the namespace of your interface.
 2. [*interface_object*]:
@@ -155,7 +201,9 @@ This method returns the store object initially passed in from the `RI.setStore()
 **Returns**: [*object*]
 
 **Example**:
-`const reduxStore = RI.getStore()`
+```
+const reduxStore = RI.getStore()
+```
 
 ***
 ## Dependencies:
