@@ -52,7 +52,7 @@ const _connectInterface = (name, input) => {
 
     // Build the actions:
     const actionsObj = Object.keys(input.actions).reduce((obj, index) => {
-      obj[index] = (payload) => _dispatach(input.actions[index](payload);
+      obj[index] = (payload) => _dispatach(input.actions[index](payload));
       return obj;
     }, {});
 
@@ -79,7 +79,7 @@ const _connectInterface = (name, input) => {
   // If the interface name conflicts:
   const err = { message: `Interface '${name}' is already in use. Try a different name..` };
   console.log(err.message);
-  
+
   return err;
 };
 
