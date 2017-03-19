@@ -1,103 +1,101 @@
 import { combineReducers } from 'redux';
 
-// ====== Private Methods: ====== //
-const _store = ((initial = null) => {
-  let clientStore = initial;
+// ====== Private ====== //
+
+const _Store = ((initial = null) => {
+  let storeInstance = initial;
 
   return {
     dispatch: (action) => {
-      return clientStore.dispatch(action);
+      return storeInstance.dispatch(action);
     },
     get: () => {
-      return clientStore;
+      return storeInstance;
     },
     set: (store) => {
-      return clientStore = store;
+      return storeInstance = store;
     }
   }
 })();
 
-const _reducers = ((initial = null) => {
-  let rootReducer = initial;
+const _Reducers = ((initial = null) => {
+  let root_reducer = initial;
+  let reducerStore = {};
 
   return {
-    mount: (name, reducers) => {
-      const newReducers = {};
-      newReducers[name] = reducers;
+    add: (name, input) => {
+      // Format the inputs:
+      const nextInterface = {};
+      nextInterface[name] = input;
 
-      if (rootReducer) {
-        return rootReducer = combineReducers( rootReducer, newReducers );
-      }
+      // Add the new interface:
+      reducerStore = Object.assign(reducerStore, nextInterface);
 
-      rootReducer = {};
-      rootReducer[name] = newReducers[name];
-      return rootReducer = combineReducers(rootReducer);
+      // Rebuild the root_reducer:
+      return root_reducer = combineReducers(reducerStore);
     },
-    getRootReducer: () => {
-      return rootReducer;
+    getRoot: () => {
+      return root_reducer;
     }
   }
 })();
 
 // ====== Action Methods: ====== //
-const _dispatach = (action) => _store.dispatch(action);
+const _dispatach = (action) => _Store.dispatch(action);
 
 // ====== Reducer Methods: ====== //
-const _getState = (Store, interfaceName, reducer) => eval(`Store.getState().${interfaceName}.${reducer}`);
+const _getState = (interfaceName, reducer, Store) => eval(`Store.getState().${interfaceName}.${reducer}`);
 
 // ====== Interface Methods: ====== //
-const _connectInterface = (name, interfaceObj) => {
+const _connectInterface = (name, input) => {
   if (!RI[name]) { // If the interface does not conflict:
-    let newInterface = {};
 
     // Build the actions:
-    let actionsObj = {};
-
-    Object.keys(interfaceObj.actions).forEach((action) => {
-      actionsObj[action] = (payload) => {
-        return _dispatach(interfaceObj.actions[action](payload));
-      };
-    });
+    const actionsObj = Object.keys(input.actions).reduce((obj, index) => {
+      obj[index] = (payload) => _dispatach(input.actions[index](payload));
+      return obj;
+    }, {});
 
     // Build the reducers:
-    let reducerObj = {};
-
-    Object.keys(interfaceObj.reducers).forEach((reducer) => {
-      reducerObj[reducer] = () => {
-        const Store = _store.get();
-
+    const reducersObj = Object.keys(input.reducers).reduce((obj, index) => {
+      obj[index] = () => {
         return {
-          getState: () => _getState(Store, name, reducer)
+          getState: () => _getState(name, index, _Store.get())
         };
       };
-    });
+      return obj;
+    }, {});
 
-    _reducers.mount(name, combineReducers(interfaceObj.reducers));
+    // Mount the reducers:
+    _Reducers.add(name, combineReducers(input.reducers));
 
     // Build the interface:
-    newInterface[name] = Object.assign({}, actionsObj, reducerObj);
+    const nextInterface = {};
+    nextInterface[name] = Object.assign(actionsObj, reducersObj);
 
-    // Rebuild the RI object with the new interface:
-    return RI = Object.assign({}, RI, newInterface);
+    // Mount the interface:
+    return RI = Object.assign(RI, nextInterface);
   }
-  const errorMsg = `Interface '${name}' is already in use. Try a different name..`;
+  // If the interface name conflicts:
+  const err = { message: `Interface '${name}' is already in use. Try a different name..` };
+  console.log(err.message);
 
-  console.log(errorMsg);
-  return { message: errorMsg };
+  return err;
 };
 
-// ====== Public Methods: ====== //
+// ====== Public ====== //
+
 export let RI = {
-  connectInterface: (name, interfaceObj) => {
-    return _connectInterface(name, interfaceObj);
+  connectInterface: (name, input) => {
+    return _connectInterface(name, input);
   },
-  setStore: (clientStore) => {
-    return _store.set(clientStore);
+  setStore: (input) => {
+    return _Store.set(input);
   },
   getStore: () => {
-    return _store.get();
+    return _Store.get();
   },
   getRootReducer: () => {
-    return _reducers.getRootReducer();
+    return _Reducers.getRoot();
   }
 };

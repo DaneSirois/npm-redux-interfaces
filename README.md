@@ -24,7 +24,7 @@ unfortunately, *NPM-Redux-Interfaces* does **not** currently support server-side
 Assuming you have a preconfigured interface named **auth**:
 
 **Dispatching actions through it:**
-```
+```js
 import { RI } from 'npm-redux-interfaces';
 
 // Dispatching an action:
@@ -32,7 +32,7 @@ RI.auth.LOGIN({...});
 ```
 
 **Accessing reducer state through it:**
-```
+```js
 import { RI } from 'npm-redux-interfaces';
 
 // Accessing a reducer:
@@ -46,7 +46,7 @@ First, create an **/interfaces** folder in the same directory that you define yo
 Next, create an **index.js** file within your new interfaces folder. This file is where you will both import, and connect each one of your interfaces from. This is also the spot where you will retreive and export your *root_reducer*:
 
 **/interfaces/index.js:**
-```
+```js
 import { RI } from 'npm-redux-interfaces';
 import Auth_interface from './Auth/Auth_interface';
 
@@ -58,7 +58,7 @@ export const root_reducer = RI.getRootReducer();
 Now, head back over to your root level **index.js** file and create your store. After defining the store, you are going to want to give the library access to it. Doing so gives the libray access to your reducers, as well as the ability to dispatch actions:
 
 **/index.js:**
-```
+```js
 import { RI } from 'npm-redux-interfaces';
 import { root_reducer } from './interfaces/index.js';
 
@@ -76,7 +76,7 @@ First, create a new folder for your interface inside of your **/interfaces** dir
 Inside of this new folder, create a **types** file for use inside of your actions and reducers:
 
 **/interfaces/Auth/Auth_types.js**:
-```
+```js
 export const type__LOGIN = 'type__LOGIN';
 ```
 - The use of double underscores is optional. However, I personally think having that visual distinction makes your actions and reducers more readable
@@ -84,7 +84,7 @@ export const type__LOGIN = 'type__LOGIN';
 Next, create both an **actions**, and **reducers** sub-folder. In case you haven't already guessed, this is where your actions and reducers for the interface will live:
 
 **/interfaces/Auth/actions/Auth_LOGIN.js**:
-```
+```js
 import { type__LOGIN } from '../Auth_types.js';
 
 const Auth_LOGIN = (creds) => {
@@ -97,7 +97,7 @@ const Auth_LOGIN = (creds) => {
 export default Auth_LOGIN;
 ```
 **/interfaces/Auth/reducers/Auth_loggedIn.js**:
-```
+```js
 import { type__LOGIN } from '../Auth_types.js';
 
 const Auth_loggedIn = (state = false, action) => {
@@ -115,7 +115,7 @@ export default Auth_loggedIn;
 Finally, create the entry point for your interface. This is where you will build and expose it's public API:
 
 **/interfaces/Auth/Auth_interface.js**:
-```
+```js
 // Actions:
 import Auth_LOGIN from './actions/Auth_LOGIN.js';
 
@@ -156,7 +156,7 @@ This method connects your interface to the library allowing you to interact with
 **Returns**: [*null*]
 
 **Example**:
-```
+```js
 RI.connectInterface('app', App_interface);
 ```
 
@@ -170,7 +170,7 @@ This method returns the *root_reducer* for your app.
 **Returns**: [*function*]
 
 **Example**:
-```
+```js
 export const root_reducer = RI.getRootReducer();
 ```
 
@@ -187,7 +187,7 @@ This method gives the library access to your redux store allowing it to internal
 **Returns**: [*null*]
 
 **Example**:
-```
+```js
 const store = applyMiddleware(...middleware)(createStore)(root_reducer);`
 
 RI.setStore(store);
@@ -201,7 +201,7 @@ This method returns the store object initially passed in from the `RI.setStore()
 **Returns**: [*object*]
 
 **Example**:
-```
+```js
 const reduxStore = RI.getStore()
 ```
 
