@@ -8,7 +8,7 @@
 - It lets you interact with your application's state from anywhere. No more need for bindings like `mapDispatchToProps()`.
 
 **Note:**
-It's my understanding that *NPM-Redux-Interfaces* does **not** currently support server-side rendering. It's something that I'm looking into.
+It's my understanding that this library does **not** currently support server-side rendering. It's something that I'm looking into.
 
 ## Index:
 1. [Usage:](#usage)
