@@ -1,14 +1,14 @@
 # NPM-Redux-Interfaces
--a self contained Redux state management library
+*-A self contained Redux state management library*
 
 **Why interfaces?**
 
-- They provide a scalable architecture for organizing and interacting with application state.
-- It allows your state, and the methods to interact with that state to exist independently from the rest your application. It's built on the concept of modularity.
-- It gives you control over your data so that you can interact with it on your own terms. No more conforming to bindings like `mapDispatchToProps()`.
+- It allows your state to exist independently from the rest your application.
+- It's built upon the concept of modularity. With that comes maintainability, along with the inclination to scale.
+- It lets you interact with your application's state from anywhere. No more need for bindings like `mapDispatchToProps()`.
 
 **Note:**
-unfortunately, *NPM-Redux-Interfaces* does **not** currently support server-side rendering. It's something I'm looking into.
+It's my understanding that this library does **not** currently support server-side rendering. It's something that I'm looking into.
 
 ## Index:
 1. [Usage:](#usage)
@@ -21,41 +21,41 @@ unfortunately, *NPM-Redux-Interfaces* does **not** currently support server-side
 
 ***
 ## Usage:
-Assuming you have a preconfigured interface named **auth**:
+Assuming the presence of a preconfigured interface named "**Chatroom**":
 
-**Dispatching actions through it:**
+**Dispatching actions:**
 ```js
 import { RI } from 'npm-redux-interfaces';
 
 // Dispatching an action:
-RI.auth.LOGIN({...});
+RI.chatroom.NEW_MESSAGE({text: "cool!"});
 ```
 
-**Accessing reducer state through it:**
+**Accessing reducer state:**
 ```js
 import { RI } from 'npm-redux-interfaces';
 
 // Accessing a reducer:
-RI.auth.loggedIn().getState();
+const messages = RI.chatroom.messages().getState();
 ```
 
 ***
 ## Configuring the Library:
-First, create an **/interfaces** folder in the same directory that you define your redux store.
+**First**, create an **/interfaces** folder in the same directory as your Redux store.
 
-Next, create an **index.js** file within your new interfaces folder. This file is where you will both import, and connect each one of your interfaces from. This is also the spot where you will retreive and export your *root_reducer*:
+**Next**, create an **index.js** file within the new **/interfaces** folder. This file is where you will connect your interfaces to the library. This is also the spot where you retrieve and export the **root_reducer**:
 
 **/interfaces/index.js:**
 ```js
 import { RI } from 'npm-redux-interfaces';
-import Auth_interface from './Auth/Auth_interface';
+import Chatroom_interface from './Chatroom/Chatroom_index';
 
-RI.connectInterface('auth', Auth_interface);
+RI.connectInterface('chatroom', Chatroom_interface);
 
 export const root_reducer = RI.getRootReducer();
 ```
 
-Now, head back over to your root level **index.js** file and create your store. After defining the store, you are going to want to give the library access to it. Doing so gives the libray access to your reducers, as well as the ability to dispatch actions:
+**Lastly**, go to your apps root level **index.js** file and create the store. Immediately after defining the store, pass in reference to it with `RI.setStore()`. This gives the library the ability to access the values of reducers as well as the ability to dispatch actions:
 
 **/index.js:**
 ```js
@@ -68,75 +68,77 @@ RI.setStore(store);
 
 ***
 ## Defining an Interface:
-Defining an interface is simple!
+Defining an interface is easy.
 
-First, create a new folder for your interface inside of your **/interfaces** directory.
-- It's convention to make the first letter of the interfaces name a capital -- ex: **Auth**.
+**First**, create a new folder inside of the **/interfaces** directory.
+- It's convention to make the first letter of the interfaces name a capital - (ex: **Chatroom**).
 
-Inside of this new folder, create a **types** file for use inside of your actions and reducers:
+Inside of this new folder, create a **types** file for your actions and reducers to import from:
 
-**/interfaces/Auth/Auth_types.js**:
+**/interfaces/Chatroom/Chatroom_types.js**:
 ```js
-export const type__LOGIN = 'type__LOGIN';
+export const type__NEW_MESSAGE = 'type__NEW_MESSAGE';
 ```
-- The use of double underscores is optional. However, I personally think having that visual distinction makes your actions and reducers more readable
+- It is convention to name your types with capitals.
+- The convention of double underscores is optional. Personally, I feel that having that visual distinction makes your actions and reducers more readable.
 
-Next, create both an **actions**, and **reducers** sub-folder. In case you haven't already guessed, this is where your actions and reducers for the interface will live:
+**Next**, create both an **actions**, and **reducers** subfolder. If you haven't already guessed, this is where your interfaces actions and reducers will live:
 
-**/interfaces/Auth/actions/Auth_LOGIN.js**:
+**/interfaces/Chatroom/actions/Chatroom_NEW_MESSAGE.js**:
 ```js
-import { type__LOGIN } from '../Auth_types.js';
+import { type__NEW_MESSAGE } from '../Chatroom_types.js';
 
-const Auth_LOGIN = (creds) => {
+const Chatroom_NEW_MESSAGE = (msg) => {
   return {
-    type: type__LOGIN,
-    payload: creds
+    type: type__NEW_MESSAGE,
+    payload: msg
   }
 }
 
-export default Auth_LOGIN;
+export default Chatroom_NEW_MESSAGE;
 ```
-**/interfaces/Auth/reducers/Auth_loggedIn.js**:
+**/interfaces/Chatroom/reducers/Chatroom_messages.js**:
 ```js
-import { type__LOGIN } from '../Auth_types.js';
+import { type__NEW_MESSAGE } from '../Chatroom_types.js';
 
-const Auth_loggedIn = (state = false, action) => {
+const Chatroom_messages = (state = [], action) => {
   switch(action.type) {
-    case 'type__LOGIN':
-      return action.payload;
+    case type__NEW_MESSAGE:
+      return state.concat([action.payload]);
     default:
       return state;
   };
 };
 
-export default Auth_loggedIn;
+export default Chatroom_messages;
 ```
 
-Finally, create the entry point for your interface. This is where you will build and expose it's public API:
+**Finally**, create the entry file for your interface. This is where you will build and expose it's public API:
 
-**/interfaces/Auth/Auth_interface.js**:
+**/interfaces/Chatroom/Chatroom_index.js**:
 ```js
 // Actions:
-import Auth_LOGIN from './actions/Auth_LOGIN.js';
+import Chatroom_NEW_MESSAGE from './actions/Chatroom_NEW_MESSAGE.js';
 
 // Reducers:
-import Auth_loggedIn from './reducers/Auth_loggedIn.js';
+import Chatroom_messages from './reducers/Chatroom_messages.js';
 
 // API:
 export default {
   actions: {
-    LOGIN: (creds) => Auth_LOGIN(creds)
+    NEW_MESSAGE: (msg) => Chatroom_NEW_MESSAGE(msg)
   },
   reducers: {
-    loggedIn: Auth_loggedIn
+    messages: Chatroom_messages
   }
 };
 ```
-- Give note to the naming convention; Actions **must** be named in all caps. This is how you tell them apart from your reducers. Failure to do so will inevitably result in naming conflicts.
+- Give note to the naming convention; Actions **must** be named in all caps. This is distinguish them apart from your reducers. Failure to do so will inevitably result in naming conflicts.
+- The keys of the "**actions**" and "**reducers**" objects are what get exposed for use when interacting with the interface.
 
-If you followed all the steps correctly, you should now how have a directory which mimics the following:
+If you followed all of the steps correctly, you should now how have a directory which mimics the following:
 
-![Auth_interface](http://imgur.com/G2JYNO1.png)
+![Chatroom_interface](http://imgur.com/tIz8HNe.png)
 
 **Thats it!**
 
@@ -157,7 +159,7 @@ This method connects your interface to the library allowing you to interact with
 
 **Example**:
 ```js
-RI.connectInterface('app', App_interface);
+RI.connectInterface('chatroom', Chatroom_interface);
 ```
 
 ***
@@ -182,13 +184,13 @@ This method gives the library access to your redux store allowing it to internal
 **Arguments**([1]):
 
 1. [*store*]:
-    - The object created upon instantiating your Redux store from inside of your app's root `index.js` file.
+    - The object created upon instantiating your Redux store from inside of your app's root level **index.js** file.
 
 **Returns**: [*null*]
 
 **Example**:
 ```js
-const store = applyMiddleware(...middleware)(createStore)(root_reducer);`
+const store = applyMiddleware(...middleware)(createStore)(root_reducer);
 
 RI.setStore(store);
 ```
@@ -210,7 +212,7 @@ const reduxStore = RI.getStore()
 1. **redux**
 
 ## Author:
-**Dane Sirois**
+**[Dane Sirois](https://www.linkedin.com/in/dane-sirois/)**
 
 ## License:
-**MIT**
+**[MIT](https://opensource.org/licenses/MIT)**
