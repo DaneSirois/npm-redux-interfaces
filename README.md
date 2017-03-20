@@ -11,17 +11,25 @@
 It's my understanding that this library does **not** currently support server-side rendering. It's something that I'm looking into.
 
 ## Index:
-1. [Usage:](#usage)
-2. [Configuring the Library:](#configuring-the-library)
-3. [Defining an Interface:](#defining-an-interface)
-4. [API:](#api)
-5. [Dependencies:](#dependencies)
-6. [Author:](#author)
-7. [License:](#license)
+1. [Intallation:](#installation)
+2. [Usage:](#usage)
+3. [Configuration:](#configuration)
+4. [Creating an Interface:](#creating-an-interface)
+5. [API:](#api)
+6. [Dependencies:](#dependencies)
+7. [Author:](#author)
+8. [License:](#license)
+
+***
+## Installation:
+```
+npm install --save npm-redux-interfaces
+```
 
 ***
 ## Usage:
-Assuming the presence of a preconfigured interface named "**Chatroom**":
+-*(Assumes the presence of a preconfigured interface named "**Chatroom**"
+Refer to:* [#Creating-an-Interface](#creating-an-interface) *for information on how to create one)*
 
 **Dispatching actions:**
 ```js
@@ -40,12 +48,14 @@ const messages = RI.chatroom.messages().getState();
 ```
 
 ***
-## Configuring the Library:
-**First**, create an **/interfaces** folder in the same directory as your Redux store.
+## Configuration:
+-*(Assumes the presence of a preconfigured interface named "**Chatroom**"
+Refer to:* [#Creating-an-Interface](#creating-an-interface) *for information on how to create one)*
 
-**Next**, create an **index.js** file within the new **/interfaces** folder. This file is where you will connect your interfaces to the library. This is also the spot where you retrieve and export the **root_reducer**:
+1. Create an "**/interfaces**" folder extending off of the directory where you define your Redux store.
+2. Create an "**index.js**" file within the new "**/interfaces**" folder. This file is where you make the connection between your interfaces, and the library. At the end of the file, remember to export the **root_reducer**:
 
-**/interfaces/index.js:**
+`/interfaces/index.js:`
 ```js
 import { RI } from 'npm-redux-interfaces';
 import Chatroom_interface from './Chatroom/Chatroom_index';
@@ -55,9 +65,9 @@ RI.connectInterface('chatroom', Chatroom_interface);
 export const root_reducer = RI.getRootReducer();
 ```
 
-**Lastly**, go to your apps root level **index.js** file and create the store. Immediately after defining the store, pass in reference to it with `RI.setStore()`. This gives the library the ability to access the values of reducers as well as the ability to dispatch actions:
+3. Navigate to your apps root level "**index.js**" file and create the store. Immediately after definition, pass reference to it with `RI.setStore()`:
 
-**/index.js:**
+`/index.js:`
 ```js
 import { RI } from 'npm-redux-interfaces';
 import { root_reducer } from './interfaces/index.js';
@@ -67,8 +77,8 @@ RI.setStore(store);
 ```
 
 ***
-## Defining an Interface:
-Defining an interface is easy.
+## Creating an Interface:
+Creating an interface is easy.
 
 **First**, create a new folder inside of the **/interfaces** directory.
 - It's convention to make the first letter of the interfaces name a capital - (ex: **Chatroom**).
