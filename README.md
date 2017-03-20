@@ -28,7 +28,7 @@ npm install --save npm-redux-interfaces
 
 ***
 ## Usage:
-*(Assumes the presence of a preconfigured interface named "**Chatroom**"
+-*(Assumes the presence of a preconfigured interface named "**Chatroom**"
 Refer to:* [#Creating-an-Interface](#Creating-an-interface) *for information on how to create one)*
 
 **Dispatching actions:**
@@ -49,7 +49,7 @@ const messages = RI.chatroom.messages().getState();
 
 ***
 ## Configuration:
-*(Assumes the presence of a preconfigured interface named "**Chatroom**"
+-*(Assumes the presence of a preconfigured interface named "**Chatroom**"
 Refer to:* [#Creating-an-Interface](#Creating-an-interface) *for information on how to create one)*
 
 1. Create an "**/interfaces**" folder extending off of the directory where you define your Redux store.
