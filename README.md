@@ -29,7 +29,7 @@ npm install --save npm-redux-interfaces
 ***
 ## Usage:
 -*(Assumes the presence of a preconfigured interface named "**Chatroom**"
-Refer to:* [#Creating-an-Interface](#Creating-an-interface) *for information on how to create one)*
+Refer to:* [#Creating-an-Interface](#creating-an-interface) *for information on how to create one)*
 
 **Dispatching actions:**
 ```js
@@ -50,7 +50,7 @@ const messages = RI.chatroom.messages().getState();
 ***
 ## Configuration:
 -*(Assumes the presence of a preconfigured interface named "**Chatroom**"
-Refer to:* [#Creating-an-Interface](#Creating-an-interface) *for information on how to create one)*
+Refer to:* [#Creating-an-Interface](#creating-an-interface) *for information on how to create one)*
 
 1. Create an "**/interfaces**" folder extending off of the directory where you define your Redux store.
 2. Create an "**index.js**" file within the new "**/interfaces**" folder. This file is where you make the connection between your interfaces, and the library. At the end of the file, remember to export the **root_reducer**:
