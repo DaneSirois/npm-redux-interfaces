@@ -1,5 +1,5 @@
 # NPM-Redux-Interfaces
-*-Create interfaces for interacting with application state:*
+*-The state-mounting interface for Redux:*
 
 **Why interfaces?**
 
@@ -60,7 +60,7 @@ Refer to:* [#Creating-an-Interface](#creating-an-interface) *for information on 
 import { RI } from 'npm-redux-interfaces';
 import Chatroom_interface from './Chatroom/Chatroom_index';
 
-RI.connectInterface('chatroom', Chatroom_interface);
+RI.mountInterface('chatroom', Chatroom_interface);
 
 export const root_reducer = RI.getRootReducer();
 ```
@@ -154,14 +154,14 @@ If you followed all of the steps correctly, you should now how have a directory 
 
 ***
 ## API:
-## RI.connectInterface([*string*], [*object*]):
-This method connects your interface to the library allowing you to interact with it's internal API.
-- As convention, name your interfaces in lowercase.
+## RI.mountInterface([*string*], [*object*]):
+This method mounts your interface into to the library giving you access to it's internal API.
+- As convention, namespace your interfaces using lowercase.
 
 **Arguments**([*1*], [*2*]):
 
 1. [*interface_name*]:
-    - A string which gets used as the namespace of your interface.
+    - A string which gets used as the namespace for your interface.
 2. [*interface_object*]:
     - An object containing the API of your interface.
 
@@ -169,9 +169,16 @@ This method connects your interface to the library allowing you to interact with
 
 **Example**:
 ```js
-RI.connectInterface('chatroom', Chatroom_interface);
+RI.mountInterface('chatroom', Chatroom_interface);
 ```
 
+***
+## RI.connectInterface([*string*], [*object*]):
+****This method is being replaced by `RI.mountInterface()` in v3.**
+
+This still works for now, but moving forward you should definitely switch to using the new API.
+
+- see docs above for information on how to use.
 ***
 ## RI.getRootReducer():
 This method returns the *root_reducer* for your app.
