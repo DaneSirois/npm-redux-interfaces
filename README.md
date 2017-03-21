@@ -3,9 +3,9 @@
 
 **Why interfaces?**
 
-- It allows your state to exist independently from the rest your application.
-- It's built upon the concept of modularity. With that comes maintainability, along with the inclination to scale.
-- It lets you interact with your application's state from anywhere. No more need for bindings like `mapDispatchToProps()`.
+- It allows your state to exist independently from the rest your application
+- It's built upon the concept of modularity. With that comes maintainability with the inclination to scale
+- It lets you interact with your application's state from anywhere. No more need for bindings like `mapDispatchToProps()`
 
 **Note:**
 It's my understanding that this library does **not** currently support server-side rendering. It's something that I'm looking into.
@@ -28,7 +28,7 @@ npm install --save npm-redux-interfaces
 
 ***
 ## Usage:
--*(Assumes the presence of a preconfigured interface named "**Chatroom**"
+*(Assumes the presence of a preconfigured interface named "**Chatroom**"
 Refer to:* [#Creating-an-Interface](#creating-an-interface) *for information on how to create one)*
 
 **Dispatching actions:**
@@ -49,13 +49,13 @@ const messages = RI.chatroom.messages().getState();
 
 ***
 ## Configuration:
--*(Assumes the presence of a preconfigured interface named "**Chatroom**"
+*(Assumes the presence of a preconfigured interface named "**Chatroom**"
 Refer to:* [#Creating-an-Interface](#creating-an-interface) *for information on how to create one)*
 
-1. Create an "**/interfaces**" folder extending off of the directory where you define your Redux store.
-2. Create an "**index.js**" file within the new "**/interfaces**" folder. This file is where you make the connection between your interfaces, and the library. At the end of the file, remember to export the **root_reducer**:
+1. Create an "**/interfaces**" folder extending from the directory where you define your Redux store.
+2. Create an "**index.js**" file within the new "**/interfaces**" folder. This file is where you will make the connection between your interfaces, and the library. At the end of the file, export the **root_reducer**:
 
-`/interfaces/index.js:`
+`/interfaces/index.js`:
 ```js
 import { RI } from 'npm-redux-interfaces';
 import Chatroom_interface from './Chatroom/Chatroom_index';
@@ -65,9 +65,9 @@ RI.connectInterface('chatroom', Chatroom_interface);
 export const root_reducer = RI.getRootReducer();
 ```
 
-3. Navigate to your apps root level "**index.js**" file and create the store. Immediately after definition, pass reference to it with `RI.setStore()`:
+3. Navigate to your apps root level "**index.js**" file and create the store. Immediately after definition, pass reference with `RI.setStore()`:
 
-`/index.js:`
+`/index.js`:
 ```js
 import { RI } from 'npm-redux-interfaces';
 import { root_reducer } from './interfaces/index.js';
@@ -80,21 +80,20 @@ RI.setStore(store);
 ## Creating an Interface:
 Creating an interface is easy.
 
-**First**, create a new folder inside of the **/interfaces** directory.
-- It's convention to make the first letter of the interfaces name a capital - (ex: **Chatroom**).
+1. Create a new folder inside of the "**/interfaces**" directory - (It's convention to make the first letter of the interfaces name begin with a capital (ex: **Chatroom**).
 
-Inside of this new folder, create a **types** file for your actions and reducers to import from:
+2. Inside of this new folder, create a "**types**" file for your actions and reducers to import from:
 
-**/interfaces/Chatroom/Chatroom_types.js**:
+`/interfaces/Chatroom/Chatroom_types.js`:
 ```js
 export const type__NEW_MESSAGE = 'type__NEW_MESSAGE';
 ```
 - It is convention to name your types with capitals.
-- The convention of double underscores is optional. Personally, I feel that having that visual distinction makes your actions and reducers more readable.
+- The convention of double underscores is optional. I find that having that visual distinction makes your actions and reducers more readable.
 
-**Next**, create both an **actions**, and **reducers** subfolder. If you haven't already guessed, this is where your interfaces actions and reducers will live:
+3. Create both an **actions**, and **reducers** subfolder. If you haven't guessed, this is where your interfaces actions and reducers will live:
 
-**/interfaces/Chatroom/actions/Chatroom_NEW_MESSAGE.js**:
+`/interfaces/Chatroom/actions/Chatroom_NEW_MESSAGE.js`:
 ```js
 import { type__NEW_MESSAGE } from '../Chatroom_types.js';
 
@@ -107,7 +106,8 @@ const Chatroom_NEW_MESSAGE = (msg) => {
 
 export default Chatroom_NEW_MESSAGE;
 ```
-**/interfaces/Chatroom/reducers/Chatroom_messages.js**:
+
+`/interfaces/Chatroom/reducers/Chatroom_messages.js`:
 ```js
 import { type__NEW_MESSAGE } from '../Chatroom_types.js';
 
@@ -123,9 +123,9 @@ const Chatroom_messages = (state = [], action) => {
 export default Chatroom_messages;
 ```
 
-**Finally**, create the entry file for your interface. This is where you will build and expose it's public API:
+4. Create the entry file for your interface. This is where you will build and expose it's public API:
 
-**/interfaces/Chatroom/Chatroom_index.js**:
+`/interfaces/Chatroom/Chatroom_index.js`:
 ```js
 // Actions:
 import Chatroom_NEW_MESSAGE from './actions/Chatroom_NEW_MESSAGE.js';

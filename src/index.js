@@ -25,8 +25,7 @@ const _Reducers = ((initial = null) => {
   return {
     add: (name, input) => {
       // Format the inputs:
-      const nextInterface = {};
-      nextInterface[name] = input;
+      const nextInterface = {[name]: input};
 
       // Add the new interface:
       reducerStore = Object.assign(reducerStore, nextInterface);
@@ -40,9 +39,6 @@ const _Reducers = ((initial = null) => {
   }
 })();
 
-// ====== Action Methods: ====== //
-const _dispatach = (action) => _Store.dispatch(action);
-
 // ====== Reducer Methods: ====== //
 const _getState = (interfaceName, reducer, Store) => eval(`Store.getState().${interfaceName}.${reducer}`);
 
@@ -52,17 +48,13 @@ const _connectInterface = (name, input) => {
 
     // Build the actions:
     const actionsObj = Object.keys(input.actions).reduce((obj, index) => {
-      obj[index] = (payload) => _dispatach(input.actions[index](payload));
+      obj[index] = (payload) => _Store.dispatch(input.actions[index](payload));
       return obj;
     }, {});
 
     // Build the reducers:
     const reducersObj = Object.keys(input.reducers).reduce((obj, index) => {
-      obj[index] = () => {
-        return {
-          getState: () => _getState(name, index, _Store.get())
-        };
-      };
+      obj[index] = () => ({ getState: () => _getState(name, index, _Store.get()) });
       return obj;
     }, {});
 
@@ -70,14 +62,14 @@ const _connectInterface = (name, input) => {
     _Reducers.add(name, combineReducers(input.reducers));
 
     // Build the interface:
-    const nextInterface = {};
-    nextInterface[name] = Object.assign(actionsObj, reducersObj);
+    const nextInterface = {[name]: Object.assign(actionsObj, reducersObj)};
 
     // Mount the interface:
     return RI = Object.assign(RI, nextInterface);
   }
-  // If the interface name conflicts:
+  // If the interface conflicts:
   const err = { message: `Interface '${name}' is already in use. Try a different name..` };
+
   console.log(err.message);
 
   return err;
