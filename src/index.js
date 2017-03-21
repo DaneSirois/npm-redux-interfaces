@@ -43,7 +43,7 @@ const _Reducers = ((initial = null) => {
 const _getState = (interfaceName, reducer, Store) => eval(`Store.getState().${interfaceName}.${reducer}`);
 
 // ====== Interface Methods: ====== //
-const _connectInterface = (name, input) => {
+const _mountInterface = (name, input) => {
   if (!RI[name]) { // If the interface does not conflict:
 
     // Build the actions:
@@ -79,7 +79,10 @@ const _connectInterface = (name, input) => {
 
 export let RI = {
   connectInterface: (name, input) => {
-    return _connectInterface(name, input);
+    return _mountInterface(name, input);
+  },
+  mountInterface: (name, input) => {
+    return _mountInterface(name, input);
   },
   setStore: (input) => {
     return _Store.set(input);
