@@ -3,9 +3,9 @@
 
 **Why interfaces?**
 
-- It allows your state to exist independently from the rest your application
-- It's built upon the concept of modularity. With that comes maintainability with the inclination to scale
-- It lets you interact with your application's state from anywhere. No more need for bindings like `mapDispatchToProps()`
+- They allow your state to exist independently from the rest your application.
+- They are built upon the concept of modularity. With that comes maintainability.
+- It lets you interact with your application's state from anywhere. No more need for bindings like `mapDispatchToProps()`.
 
 **Note:**
 It's my understanding that this library does **not** currently support server-side rendering. It's something that I'm looking into.
@@ -64,7 +64,6 @@ RI.mountInterface('chatroom', Chatroom_interface);
 
 export const root_reducer = RI.getRootReducer();
 ```
-
 3. Navigate to your apps root level "**index.js**" file and create the store. Immediately after definition, pass reference with `RI.setStore()`:
 
 `/index.js`:
