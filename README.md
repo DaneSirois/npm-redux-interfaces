@@ -28,7 +28,7 @@ npm install --save npm-redux-interfaces
 
 ***
 ## Usage:
-- See [#Creating-an-interface](#creating-an-interface) for information on how to configure.
+- See [#Creating-an-interface](#creating-an-interface) for more information on how to configure.
 
 `/interfaces/Chatroom/Chatroom_index.js`:
 ```js
