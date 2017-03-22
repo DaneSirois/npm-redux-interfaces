@@ -28,7 +28,9 @@ npm install --save npm-redux-interfaces
 
 ***
 ## Usage:
-- See [#Creating-an-interface](#creating-an-interface) for more information on how to configure.
+
+**Creating an interface**:
+- (*See [#Creating-an-interface](#creating-an-interface) for information on how to fully configure*).
 
 `/interfaces/Chatroom/Chatroom_index.js`:
 ```js
@@ -47,6 +49,20 @@ export default {
     messages: Chatroom_messages
   }
 };
+```
+
+**Connecting your interface**:
+
+`/interfaces/index.js`:
+```js
+import { RI } from 'npm-redux-interfaces';
+import Chatroom_interface from './Chatroom/Chatroom_index';
+
+// Mount your interfaces:
+RI.mountInterface('chatroom', Chatroom_interface);
+
+// Export the root_reducer:
+export const root_reducer = RI.getRootReducer();
 ```
 
 **Dispatching actions:**
