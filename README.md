@@ -1,11 +1,10 @@
 # NPM-Redux-Interfaces
-*-The state-mounting interface for Redux:*
+*-The state-management ecosystem for Redux:*
 
 **Why interfaces?**
 
-- They allow your state to exist independently from the rest your application.
-- They are built upon the concept of modularity. With that comes maintainability.
-- It lets you interact with your application's state from anywhere. No more need for bindings like `mapDispatchToProps()`.
+- Write *once*, use **anywhere**. Built upon the concept of modularity, copy/paste your interface folders for use across repos.
+- Liberate your state. Interfaces separate your applications data logic from it's implementation. This degree of separation nullifies the need for bindings like `mapDispatchToProps()`.
 
 **Note:**
 It's my understanding that this library does **not** currently support server-side rendering. It's something that I'm looking into.
@@ -85,13 +84,15 @@ const messages = RI.chatroom.messages().getState();
 ## Configuration:
 *(Assumes the presence of a preconfigured interface named "**Chatroom**")*
 
-**[1]**: Create an "**/interfaces**" folder extending from the directory where you define your Redux store.
+**[1]**: Create an "**interfaces**" folder extending off of the directory where you define your Redux store.
 
-**[2]**: Create an "**index.js**" file within the new "**/interfaces**" folder. This file is where you will make the connection between your interfaces, and the library. At the end of the file, export the **root_reducer**:
+**[2]**: Create an "**index.js**" file within the new "**interfaces**" folder. This file is where you will make the connection between your interfaces, and the library. At the end of this file, export the "**root_reducer**":
 
 `/interfaces/index.js`:
 ```js
 import { RI } from 'npm-redux-interfaces';
+
+// Import your interfaces:
 import Chatroom_interface from './Chatroom/Chatroom_index';
 
 // Mount your interfaces:
@@ -111,7 +112,7 @@ import { root_reducer } from './interfaces/index.js';
 // Create the store:
 const store = applyMiddleware(...middleware)(createStore)(root_reducer);
 
-// Pass reference to it:
+// Pass in reference to it:
 RI.setStore(store);
 ```
 
@@ -163,8 +164,8 @@ const Chatroom_messages = (state = [], action) => {
 export default Chatroom_messages;
 ```
 
-**[4]**: Create the entry point for your interface. This is where you build and expose it's public API:
-- (The keys of the "**actions**" and "**reducers**" objects are what get used as the external API).
+**[4]**: Create the entry point for your interface. This is where you both build and expose it's public API:
+- (The keys of the "**actions**" and "**reducers**" objects are what get used as it's external API).
 - (Actions **must** be named in all caps. This is what differentiates them from your reducers).
 
 `/interfaces/Chatroom/Chatroom_index.js`:
@@ -186,7 +187,7 @@ export default {
 };
 ```
 
-If you followed all of the steps correctly, you should now how have a directory that mimics the following:
+If you followed all of the steps correctly, you should now how have a directory which mimics the following:
 
 ![Chatroom_interface](http://imgur.com/tIz8HNe.png)
 
@@ -216,9 +217,9 @@ RI.mountInterface('chatroom', Chatroom_interface);
 ## RI.connectInterface([*string*], [*object*]):
 ****This method is being replaced by `RI.mountInterface()` in v3.**
 
-This still works for now, but moving forward you should definitely switch to using the new API.
+This still works for now, but moving forward you should switch to the new API.
 
-- see docs above for information on how to use.
+- See docs above for information on how to use.
 ***
 ## RI.getRootReducer():
 This method returns the *root_reducer* for your app.
