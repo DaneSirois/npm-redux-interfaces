@@ -55,6 +55,8 @@ export default {
 `/interfaces/index.js`:
 ```js
 import { RI } from 'npm-redux-interfaces';
+
+// Import your interfaces:
 import Chatroom_interface from './Chatroom/Chatroom_index';
 
 // Mount your interfaces:
