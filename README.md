@@ -1,5 +1,5 @@
 # NPM-Redux-Interfaces
-*-The state-management ecosystem for Redux:*
+-[*The state-management ecosystem for Redux*]:
 
 **Why interfaces?**
 
