@@ -1,10 +1,13 @@
-# NPM-Redux-Interfaces
-[*The state-management ecosystem for Redux*]:
+# Redux-Interfaces:
+-*The state-management ecosystem for Redux*:
+
+Interfaces provide a means for both the modification and retrieval of your applications state.
+Through them the goal is to reduce boilerplate while simultaneously promoting code reuse along with sensible file coupling.
 
 **Why interfaces?**
 
-- Write *once*, use **anywhere**. Built upon the concept of modularity, copy/paste your interface folders for use across repos.
-- Liberate your state. Interfaces separate your applications data logic from it's implementation. This degree of separation nullifies the need for bindings like `mapDispatchToProps()`.
+- Write *once*, use **anywhere**. Interfaces contain everything they need to exist independently from the rest of your application. Copy/paste your interface folders for use across repos.
+- Liberate your state. Each interface exposes a public API representing the means of interaction pertaining to an individual slice of your applications state. This degree of abstraction makes your code more maintainable while simultaneously removing the need for bindings like `mapDispatchToProps()`.
 
 **Note:**
 It's my understanding that this library does **not** currently support server-side rendering. It's something that I'm looking into.
