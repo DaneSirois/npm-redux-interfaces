@@ -2,7 +2,7 @@
 -*The state-management ecosystem for Redux*:
 
 Interfaces provide a means for both the modification and retrieval of your applications state.
-Through them the goal is to reduce boilerplate while simultaneously promoting code reuse along with sensible file coupling.
+Through them the goal is to reduce boilerplate while simultaneously promoting code reuse along with sensible file structuring.
 
 **Why interfaces?**
 
