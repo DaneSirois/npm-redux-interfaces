@@ -1,5 +1,5 @@
 # Redux-Interfaces:
--*The state-management ecosystem for Redux*:
+[A Redux state management architecture/API]:
 
 Interfaces provide a means for both the modification and retrieval of your applications state.
 Through them the goal is to reduce boilerplate while simultaneously promoting code reuse along with sensible file structuring.
@@ -7,7 +7,7 @@ Through them the goal is to reduce boilerplate while simultaneously promoting co
 **Why interfaces?**
 
 - Write *once*, use **anywhere**. Interfaces contain everything they need to exist independently from the rest of your application. Copy/paste your interface folders for use across repos.
-- Liberate your state. Each interface exposes a public API representing the means of interaction pertaining to an individual slice of your applications state. This degree of abstraction makes your code more maintainable while simultaneously removing the need for bindings like `mapDispatchToProps()`.
+- Liberate your state. Each interface exposes a specialized public API representing the means of interaction pertaining to an individual slice of your applications state. This degree of abstraction makes your code more maintainable while simultaneously removing the need for bindings like `mapDispatchToProps()`.
 
 **Note:**
 It's my understanding that this library does **not** currently support server-side rendering. It's something that I'm looking into.
