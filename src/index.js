@@ -46,29 +46,33 @@ const _getState = (interfaceName, reducer, Store) => eval(`Store.getState().${in
 const _mountInterface = (name, input) => {
   if (!RI[name]) { // If the interface does not conflict:
 
-    // Build the actions:
-    const actionsObj = Object.keys(input.actions).reduce((obj, index) => {
-      obj[index] = (...payload) => _Store.dispatch(input.actions[index](...payload));
-      return obj;
-    }, {});
+    let actionsObj = {};
+    if (input.actions) { // Build the actions:
+      actionsObj = Object.keys(input.actions).reduce((obj, index) => {
+        obj[index] = (...payload) => _Store.dispatch(input.actions[index](...payload));
+        return obj;
+      }, {});
+    }
 
-    // Build the reducers:
-    const reducersObj = Object.keys(input.reducers).reduce((obj, index) => {
-      obj[index] = () => ({ getState: () => _getState(name, index, _Store.get()) });
-      return obj;
-    }, {});
+    let reducersObj = {};
+    if (input.reducers) { // Build the reducers:
+      reducersObj = Object.keys(input.reducers).reduce((obj, index) => {
+        obj[index] = () => ({ getState: () => _getState(name, index, _Store.get()) });
+        return obj;
+      }, {});
 
-    // Mount the reducers:
-    _Reducers.add(name, combineReducers(input.reducers));
+      // Mount the reducers:
+      _Reducers.add(name, combineReducers(input.reducers));
+    }
 
     // Build the interface:
-    const nextInterface = {[name]: Object.assign(actionsObj, reducersObj)};
+    const nextInterface = { [name]: Object.assign(actionsObj, reducersObj) };
 
     // Mount the interface:
     return RI = Object.assign(RI, nextInterface);
   }
   // If the interface conflicts:
-  const err = { message: `Interface '${name}' is already in use. Try a different name..` };
+  const err = { message: `Interface '${name}' is already in use. Try a different name.` };
 
   console.log(err.message);
 
