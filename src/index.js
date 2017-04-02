@@ -48,7 +48,7 @@ const _mountInterface = (name, input) => {
 
     // Build the actions:
     const actionsObj = Object.keys(input.actions).reduce((obj, index) => {
-      obj[index] = (payload) => _Store.dispatch(input.actions[index](payload));
+      obj[index] = (...payload) => _Store.dispatch(input.actions[index](...payload));
       return obj;
     }, {});
 
