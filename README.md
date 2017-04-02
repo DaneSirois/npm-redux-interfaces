@@ -1,16 +1,16 @@
 # Redux-Interfaces:
-[A Redux state management architecture/API]:
+-**A Redux state management architecture/API**:
 
-Interfaces provide a means for both the modification and retrieval of your applications state.
-Through them the goal is to reduce boilerplate while simultaneously promoting code reuse along with sensible file structuring.
+Interfaces provide a means surrounding both the modification and retrieval of your applications state through an expressive API built on top of Redux.
+The aim is to reduce boilerplate, while promote code reuse/libration.
 
 **Why interfaces?**
 
-- Write *once*, use **anywhere**. Interfaces contain everything they need to exist independently from the rest of your application. Copy/paste your interface folders for use across repos.
-- Liberate your state. Each interface exposes a specialized public API representing the means of interaction pertaining to an individual slice of your applications state. This degree of abstraction makes your code more maintainable while simultaneously removing the need for bindings like `mapDispatchToProps()`.
+- Write *once*, use **anywhere**. Interfaces contain everything they need to exist on their own. Copy/paste your interface folders for use across repos.
+- Liberate your state. Each interface exposes an API representing the point of interaction pertaining to specialized slices of your applications state. This degree of abstraction makes your code more maintainable while removing the need for bindings like `mapDispatchToProps()`.
 
 **Note:**
-It's my understanding that this library does **not** currently support server-side rendering. It's something that I'm looking into.
+It's my understanding that this library does **not** currently support server-side rendering.. It's something that I'm looking into.
 
 ## Index:
 1. [Installation:](#installation)
@@ -32,7 +32,8 @@ npm install --save npm-redux-interfaces
 ## Usage:
 
 **Creating an interface**:
-- (*See [#Creating-an-interface](#creating-an-interface) for information on how to fully configure*).
+
+-*See [#Creating-an-interface](#creating-an-interface) for information on how to fully configure*:
 
 `/interfaces/Chatroom/Chatroom_index.js`:
 ```js
