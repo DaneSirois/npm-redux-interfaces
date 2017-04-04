@@ -1,8 +1,8 @@
 # Redux-Interfaces:
--**A Redux state management architecture/API**:
+> A Redux state management architecture/API
 
 Interfaces provide a means surrounding both the modification and retrieval of your applications state through an expressive API built on top of Redux.
-The aim is to reduce boilerplate, while promote code reuse/libration.
+The aim is to reduce boilerplate, while promoting code reuse/libration.
 
 **Why interfaces?**
 
@@ -30,7 +30,7 @@ npm install --save npm-redux-interfaces
 
 ***
 ## Usage:
--*See [#Creating-an-interface](#creating-an-interface) for information on how to fully configure*:
+-*See [#Creating-an-interface](#creating-an-interface) for information on how to configure*:
 
 **Creating an interface**:
 
@@ -74,7 +74,7 @@ export const root_reducer = RI.getRootReducer();
 import { RI } from 'npm-redux-interfaces';
 
 // Dispatching an action:
-RI.chatroom.NEW_MESSAGE({text: "cool!"});
+RI.chatroom.NEW_MESSAGE({ text: "cool!" });
 ```
 
 **Accessing reducer state:**
