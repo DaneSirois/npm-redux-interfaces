@@ -48,11 +48,8 @@ npm install --save npm-redux-interfaces
 
 ***
 ## Usage:
--(*See [#Creating-an-interface](#creating-an-interface) for information on how to configure*)
 
 **Creating an interface**:
-
-`/interfaces/Chatroom/Chatroom_index.js`:
 ```js
 // Actions:
 import Chatroom_NEW_MESSAGE from './actions/Chatroom_NEW_MESSAGE.js';
@@ -70,10 +67,9 @@ export default {
   }
 };
 ```
+-(*See [#Creating-an-interface](#creating-an-interface) for information on how to configure*)
 
 **Connecting your interface**:
-
-`/interfaces/index.js`:
 ```js
 import { RI } from 'npm-redux-interfaces';
 
@@ -95,7 +91,7 @@ import { RI } from 'npm-redux-interfaces';
 RI.chatroom.NEW_MESSAGE({ text: 'cool!' });
 ```
 
-**Accessing reducer state:**
+**Accessing reducers:**
 ```js
 import { RI } from 'npm-redux-interfaces';
 
@@ -110,7 +106,7 @@ const messages = RI.chatroom.messages().getState();
 
 **[2]**: Create an "**index.js**" file within the new "**interfaces**" folder. This file is where you will make the connection between your interfaces, and the library. At the end of this file, export the "**root_reducer**":
 
-`/interfaces/index.js`:
+**[/interfaces/index.js]:**
 ```js
 import { RI } from 'npm-redux-interfaces';
 
@@ -127,7 +123,7 @@ export const root_reducer = RI.getRootReducer();
 
 **[3]**: Navigate to your apps root level "**index.js**" file and create the store. Immediately after definition, pass in reference to it with `RI.setStore()`:
 
-`/index.js`:
+**[/index.js]:**
 ```js
 import { RI } from 'npm-redux-interfaces';
 import { root_reducer } from './interfaces/index.js';
@@ -150,14 +146,14 @@ Your application is now ready for the creation of interfaces.
 - *It's convention to name your constants with capitals.*
 - *The convention of double underscores is optional. I find that having a visual distinction makes your actions and reducers more readable*.
 
-`/interfaces/Chatroom/Chatroom_types.js`:
+**[/interfaces/Chatroom/Chatroom_types.js]:**
 ```js
 export const type__NEW_MESSAGE = 'type__NEW_MESSAGE';
 ```
 
 **[3]**: Create subfolders for your "**actions**" and "**reducers**":
 
-`/interfaces/Chatroom/actions/Chatroom_NEW_MESSAGE.js`:
+**[/interfaces/Chatroom/actions/Chatroom_NEW_MESSAGE.js]:**
 ```js
 import { type__NEW_MESSAGE } from '../Chatroom_types.js';
 
@@ -171,7 +167,7 @@ const Chatroom_NEW_MESSAGE = (msg) => {
 export default Chatroom_NEW_MESSAGE;
 ```
 
-`/interfaces/Chatroom/reducers/Chatroom_messages.js`:
+**[/interfaces/Chatroom/reducers/Chatroom_messages.js]:**
 ```js
 import { type__NEW_MESSAGE } from '../Chatroom_types.js';
 
@@ -191,7 +187,7 @@ export default Chatroom_messages;
 - *This file **must** export an object that contains both the keys "**actions**", and "**reducers**". It is okay to omit either key, but do know that it's presence is needed if you wish to use that part of your interface..*
 - *Your actions **must** be named in all caps. This is what differentiates them from your reducers.*
 
-`/interfaces/Chatroom/Chatroom_index.js`:
+**[/interfaces/Chatroom/Chatroom_index.js]:**
 ```js
 // Actions:
 import Chatroom_NEW_MESSAGE from './actions/Chatroom_NEW_MESSAGE.js';
