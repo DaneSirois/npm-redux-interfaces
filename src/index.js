@@ -57,7 +57,7 @@ const _mountInterface = (name, input) => {
     let reducersObj = {};
     if (input.reducers) { // Build the reducers:
       reducersObj = Object.keys(input.reducers).reduce((obj, index) => {
-        obj[index] = () => ({ getState: () => _getState(name, index, _Store.get()) });
+        obj[index] = { getState: () => _getState(name, index, _Store.get()) };
         return obj;
       }, {});
 
