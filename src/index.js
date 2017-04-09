@@ -82,10 +82,7 @@ const _mountInterface = (name, input) => {
 // ====== Public ====== //
 
 export let RI = {
-  connectInterface: (name, input) => {
-    return _mountInterface(name, input);
-  },
-  mountInterface: (name, input) => {
+  mount: (name, input) => {
     return _mountInterface(name, input);
   },
   setStore: (input) => {
