@@ -1,24 +1,72 @@
 import { combineReducers } from 'redux';
 
 // ====== Private ====== //
+const Store = ((initial = null) => {
+  let ClientStore = initial;
 
-const _Store = ((initial = null) => {
-  let storeInstance = initial;
+  const _connectStore = (store) => API.subscribe.connectStore(store);
+  const _removeSub = () => API.subscribe.removeSub();
 
-  return {
+  let API = {
+    subscribe: (() => {
+      /*[1] Whenever currentState changes, this method should
+      update all pointers to it with the new value. */
+      const subscriptions = {};
+      let currentState;
+      let unsubscribe;
+
+      //[3] Check for changes and update currentState:
+      const handleChange = () => {
+        const nextState = ClientStore.getState();
+
+        if (nextState !== currentState) {
+          for (let namespace in subscriptions) {
+            const _interface = subscriptions[namespace];
+
+            for (let reducer in _interface) { // Assign new state to subscription:
+              _interface[reducer] = nextState[namespace][reducer];
+            }
+          }
+          currentState = nextState;
+        }
+      };
+
+      //[2] Subscribe to the store and save the disconnect method:
+      const _connect = (store) => {
+        unsubscribe = store.subscribe(handleChange); // returns: unsubscribe();
+      };
+
+      return {
+        connectStore: _connect,
+        addSub: (name, reducer) => {
+          if (!subscriptions[name]) {
+            subscriptions[name] = { [reducer]: ClientStore.getState()[name][reducer] };
+            return subscriptions[name];
+          }
+        },
+        removeSub: (namespace, reducer) =>  {
+          if (subscriptions[namespace]) {
+            return delete subscriptions[namespace][reducer];
+          }
+          return "there is no reducer with these inputs to unsubscribe to";
+        }
+      };
+    })(),
     dispatch: (action) => {
-      return storeInstance.dispatch(action);
+      ClientStore.dispatch(action);
     },
     get: () => {
-      return storeInstance;
+      return ClientStore;
     },
     set: (store) => {
-      return storeInstance = store;
+      ClientStore = store;
+      _connectStore(store);
     }
-  }
+  };
+  return API;
 })();
 
-const _Reducers = ((initial = null) => {
+const Reducer = ((initial = null) => {
   let root_reducer = initial;
   let reducerStore = {};
 
@@ -40,39 +88,43 @@ const _Reducers = ((initial = null) => {
 })();
 
 // ====== Reducer Methods: ====== //
-const _getState = (interfaceName, reducer, Store) => eval(`Store.getState().${interfaceName}.${reducer}`);
+const _getState = (Store, interfaceName, reducer) => eval(`Store.getState().${interfaceName}.${reducer}`);
 
 // ====== Interface Methods: ====== //
-const _mountInterface = (name, input) => {
-  if (!RI[name]) { // If the interface does not conflict:
+const _mountInterface = (namespace, input) => {
+  if (!RI[namespace]) { // If the interface does not conflict:
 
     let actionsObj = {};
     if (input.actions) { // Build the actions:
-      actionsObj = Object.keys(input.actions).reduce((obj, index) => {
-        obj[index] = (...payload) => _Store.dispatch(input.actions[index](...payload));
+      actionsObj = Object.keys(input.actions).reduce((obj, action) => {
+        obj[action] = (...payload) => Store.dispatch(input.actions[action](...payload));
         return obj;
       }, {});
     }
 
     let reducersObj = {};
     if (input.reducers) { // Build the reducers:
-      reducersObj = Object.keys(input.reducers).reduce((obj, index) => {
-        obj[index] = { getState: () => _getState(name, index, _Store.get()) };
+      reducersObj = Object.keys(input.reducers).reduce((obj, reducer) => {
+        obj[reducer] = {
+          getState: () => _getState(Store.get(), namespace, reducer),
+          subscribe: () => Store.subscribe.addSub(namespace, reducer),
+          unsubscribe: () => Store.subscribe.removeSub(namespace, reducer)
+        };
         return obj;
       }, {});
 
       // Mount the reducers:
-      _Reducers.add(name, combineReducers(input.reducers));
+      Reducer.add(namespace, combineReducers(input.reducers));
     }
 
     // Build the interface:
-    const nextInterface = { [name]: Object.assign(actionsObj, reducersObj) };
+    const nextInterface = { [namespace]: Object.assign(actionsObj, reducersObj) };
 
     // Mount the interface:
     return RI = Object.assign(RI, nextInterface);
   }
   // If the interface conflicts:
-  const err = { message: `Interface '${name}' is already in use. Try a different name.` };
+  const err = { message: `Interface '${namespace}' is already in use. Try a different namespace.` };
 
   console.log(err.message);
 
@@ -80,18 +132,17 @@ const _mountInterface = (name, input) => {
 };
 
 // ====== Public ====== //
-
 export let RI = {
-  mount: (name, input) => {
-    return _mountInterface(name, input);
+  mount: (namespace, input) => {
+    return _mountInterface(namespace, input);
   },
   setStore: (input) => {
-    return _Store.set(input);
+    return Store.set(input);
   },
   getStore: () => {
-    return _Store.get();
+    return Store.get();
   },
   getRootReducer: () => {
-    return _Reducers.getRoot();
+    return Reducer.getRoot();
   }
 };
