@@ -54,7 +54,7 @@ npm install --save npm-redux-interfaces
 
 **Creating an interface**:
 ```js
-/* /interfaces/Chatroom/Chatroom_index.js */
+/* /interfaces/App/App_index.js */
 
 import App_RENDER from './actions/App_RENDER.js';
 
@@ -275,7 +275,7 @@ This method returns the store object initially passed in from the `RI.setStore()
 
 **Example**:
 ```js
-const reduxStore = RI.getStore()
+const reduxStore = RI.getStore();
 ```
 
 ***
