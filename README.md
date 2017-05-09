@@ -8,7 +8,7 @@ With them the aim is to reduce boilerplate, while providing cross-repo code reus
 
 - **Liberate your state** - Interfaces give you access to your redux state from anywhere within your application. Dispatching actions is now just a function call, so bindings like `mapDispatchToProps()` are no longer needed.
 - **Write *once* then *reuse*** - Interfaces exist independently from the rest of your application. They even exist independently from other interfaces. Reuse your interface code across repos.
-- **Maintainability** - The nature of interfaces make you decide upon groupings for splitting up your applications state. You can think of it as organizing by *feature* opposed to *type*. This division helps keep your state sane and ultimately paints a broader picture of your applications state as a whole.
+- **Maintainability** - The nature of interfaces make you decide upon groupings for dividing up your applications state. You can think of it as organizing by *feature*, or *functionality*, opposed to by *type*. This division keep your state sane, while ultimately painting a piece of the broader picture of your applications state as a whole.
 
 **Consumption**:
 
@@ -27,13 +27,13 @@ RI.post.UPDATE({...});
 RI.post.DELETE(...);
 
 // ACCESSING REDUCERS:
-const posts = RI.posts.all().getState();
+const posts = RI.posts.allPosts().getState();
 
 // Using React:
 function mapStateToProps() {
   return ({
     loading: RI.app.loading().getState(),
-    friendsList: RI.user.all().getState()
+    friendsList: RI.user.friendsList().getState()
   });
 };
 ```
@@ -152,7 +152,7 @@ RI.setStore(store);
 
 **[2]**: Inside of the new folder, create a **types** file. This is where your will define your Redux types:
 - It's convention to name your types with capitals.
-- You do not need a *types* file if you are using [`typeStash`]()(recommended).
+- You do not need a *types* file if you are using [`type-stash`](https://www.npmjs.com/package/type-stash)(recommended).
 
 **[/interfaces/App/App_types.js]**:
 ```js
@@ -173,8 +173,8 @@ export default (bool) => {
   };
 };
 
-// With typeStash:
-import typeStash from 'typeStash';
+// With type-stash:
+import typeStash from 'type-stash';
 
 export default (bool) => {
   return {
@@ -198,8 +198,8 @@ export default (state = false, action) => {
   };
 };
 
-// With typeStash:
-import typeStash from 'typeStash';
+// With type-stash:
+import typeStash from 'type-stash';
 
 export default (state = false, action) => {
   switch(action.type) {
