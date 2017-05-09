@@ -1,36 +1,45 @@
 # Redux-Interfaces
 > Redux State-Management API builder:
 
-Interfaces handle the logic pertaining to both the modification and retrieval of your applications state.
-With them the aim is to reduce boilerplate while providing cross repo code reuse and liberation.
+Interfaces define the consumption methods surrounding both the modification and retrieval of application state.
+With them the aim is to reduce boilerplate, while providing cross-repo code reuse/liberation.
 
 **Why interfaces**:
 
-- **Liberate your state** - Interfaces let you interact with Redux from anywhere within your application. Dispatching an action is now done through an function call, so there is no longer a need for bindings like `mapDispatchToProps()`.
-- **Write *once*, use *anywhere*** - Interfaces contain everything they need to exist separately from the rest of your application. They even exist independently from other interfaces. Reuse your interfaces across repos.
-- **Maintain/Scalability** - The nature of interfaces force you to organize your state according to similar logic. This grouping of functionality makes it easy for new devs to become acquainted with your codebase, along with making the process easier to add additional features.
+- **Liberate your state** - Interfaces give you access to your redux state from anywhere within your application. Dispatching actions is now just a function call, so bindings like `mapDispatchToProps()` are no longer needed.
+- **Write *once* then *reuse*** - Interfaces exist independently from the rest of your application. They even exist independently from other interfaces. Reuse your interface code across repos.
+- **Maintainability** - The nature of interfaces make you decide upon groupings for splitting up your applications state. You can think of it as organizing by *feature* opposed to *type*. This division helps keep your state sane and ultimately paints a broader picture of your applications state as a whole.
 
-**Interface Consumption**:
+**Consumption**:
 
-- (*See [#Creating-an-interface](#creating-an-interface) for information on how to configure an interface*)
+- (*See [#Creating-an-interface](#creating-an-interface) for information on how to create an interface*)
 ```js
 import { RI } from 'npm-redux-interfaces';
 
-// Dispatching an action:
+// DISPATCHING ACTIONS:
 RI.app.LOADING(true);
 RI.user.ADD_FRIEND({ name: 'Don' });
 
-// Accessing a reducer:
+// Follow CRUD:
+RI.post.CREATE({...});
+RI.post.READ({...});
+RI.post.UPDATE({...});
+RI.post.DELETE(...);
+
+// ACCESSING REDUCERS:
+const posts = RI.posts.all().getState();
+
+// Using React:
 function mapStateToProps() {
   return ({
     loading: RI.app.loading().getState(),
-    friendsList: RI.user.friendsList().getState()
+    friendsList: RI.user.all().getState()
   });
 };
 ```
 
-**Note:**
-It's my understanding that this library does **not** currently support server-side rendering.. It's something that I'm looking into.
+- **Note:**
+This library may **not** currently support server-side rendering.. It's something that needs looking into.
 
 ## Index:
 1. [Installation:](#installation)
@@ -54,7 +63,7 @@ npm install --save npm-redux-interfaces
 
 **Creating an interface**:
 ```js
-/* /interfaces/App/App_index.js */
+/*[ /interfaces/App/App_index.js ]*/
 
 import App_RENDER from './actions/App_RENDER.js';
 
@@ -95,18 +104,18 @@ RI.app.RENDER(true);
 ```js
 import { RI } from 'npm-redux-interfaces';
 
-const renderApp = RI.app.render().getState();
+const renderApp = RI.app.render().getState(); // true
 ```
 
 ***
 ## Configuration:
 - (*See [#Creating-an-interface](#creating-an-interface) for information on how to create an interface*)
 
-**[1]**: Create an *interfaces* folder extending off from the directory where you define your Redux store.
+**[1]**: Create an *interfaces* folder off of the directory where you define your Redux store.
 
-**[2]**: Create an `index.js` file within your new *interfaces* folder. This file is where you make the connection between your interfaces and the library. At the end of this file, export the `root_reducer`.
+**[2]**: Create an `index.js` file within your new *interfaces* folder. This file is where you will make the connection between your interfaces, and the library. At the end of this file, export the `root_reducer`.
 
-**[ interfaces/index.js ]**:
+**[interfaces/index.js]**:
 ```js
 import { RI } from 'npm-redux-interfaces';
 
@@ -120,9 +129,9 @@ RI.mountInterface('chatroom', Chatroom_interface);
 export const root_reducer = RI.getRootReducer();
 ```
 
-**[3]**: Navigate to your apps root level `index.js` file and create the store. Immediately after definition, pass reference to it with `RI.setStore()`.
+**[3]**: Navigate to your apps root `index.js` file and create the store. Immediately after definition, pass in reference to it with `RI.setStore()`.
 
-**[ /index.js ]:**
+**[/index.js]:**
 ```js
 import { RI } from 'npm-redux-interfaces';
 import { root_reducer } from './interfaces/index.js';
@@ -139,19 +148,20 @@ RI.setStore(store);
 ## Creating an Interface:
 
 **[1]**: Create a new folder for your interface inside of the `/interfaces` directory:
-- It's convention to capitalize the first letter of the interface folder name (**ex**: `Chatroom`).
+- It's convention to capitalize the first letter of the interface folders name (**ex**: `Chatroom`).
 
 **[2]**: Inside of the new folder, create a **types** file. This is where your will define your Redux types:
 - It's convention to name your types with capitals.
+- You do not need a *types* file if you are using [`typeStash`]()(recommended).
 
-**[ /interfaces/App/App_types.js ]:**
+**[/interfaces/App/App_types.js]**:
 ```js
 export const type__APP_RENDER = 'type__APP_RENDER';
 ```
 
 **[3]**: Create sub directories for your *actions* and *reducers*:
 
-**[ /interfaces/App/actions/App_RENDER.js ]:**
+**[/interfaces/App/actions/App_RENDER.js]:**
 ```js
 // Action:
 import { type__APP_RENDER } from '../App_types.js';
@@ -162,9 +172,19 @@ export default (bool) => {
     payload: bool
   };
 };
+
+// With typeStash:
+import typeStash from 'typeStash';
+
+export default (bool) => {
+  return {
+    type: typeStash.use('APP_RENDER'),
+    payload: bool
+  };
+};
 ```
 
-**[ /interfaces/App/reducers/App_render.js ]:**
+**[/interfaces/App/reducers/App_render.js]:**
 ```js
 // Reducer:
 import { type__App_RENDER } from '../App_types.js';
@@ -172,7 +192,20 @@ import { type__App_RENDER } from '../App_types.js';
 export default (state = false, action) => {
   switch(action.type) {
     case type__App_RENDER:
-      return state.concat([action.payload]);
+      return action.payload;
+    default:
+      return state;
+  };
+};
+
+// With typeStash:
+import typeStash from 'typeStash';
+
+export default (state = false, action) => {
+  switch(action.type) {
+    case typeStash.use('App_RENDER'):
+      return action.payload;
+    break;
     default:
       return state;
   };
@@ -181,10 +214,10 @@ export default (state = false, action) => {
 
 **[4]**: Create the entry point for your interface. This is where you build and expose it's public API.
 
-- This file **must** export an object that contains the properties *actions*, and *reducers*. It's okay to omit either key, but do know that their presence is required if you wish to use that part of your interface.
+- This file **must** export an object that contains the properties *actions*, and *reducers*. It's okay to omit either key, but do know that their presence is required if you wish to use that part of the interface.
 - Your actions **must** be named in all caps. This is what differentiates them from your reducers.
 
-**[ /interfaces/App/App_index.js ]:**
+**[/interfaces/App/App_index.js]:**
 ```js
 import App_RENDER from './actions/App_RENDER.js';
 
@@ -212,7 +245,7 @@ export default {
 This method mounts your interface into to the library giving you access to it's internal API.
 - As convention, namespace your interfaces using lowercase.
 
-**Arguments**( [*1*], [*2*] ):
+**Arguments**([*1*], [*2*]):
 
 1. [*interface_name*]:
     - A string which gets used as the namespace for your interface.
