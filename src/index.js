@@ -1,57 +1,119 @@
 import { combineReducers } from 'redux';
 
 // ====== Private ====== //
+const Reducer = (store, interfaceName, reducerName) => ({
+  getState: () => eval(`store.getState().${interfaceName}.${reducerName}`),
+  setSubscription: (cb) => store.subscribe.setSubscription(interfaceName, reducerName, cb)
+});
+
 const Store = ((initial = null) => {
   let ClientStore = initial;
+  let currentState;
 
-  const _connectStore = (store) => API.subscribe.connectStore(store);
-  const _removeSub = () => API.subscribe.removeSub();
+  const subscriptions = (() => {
+    const subs = {};
+    return {
+      setSubscription: (interfaceName, reducerName, callback) => {
+        /* In the context of the incoming subscription */
+        const hooks = (() => {
+          const instances = [];
+          return {
+            get: () => (
+              instances
+            ),
+            add: (hook) => {
+              instances.push(hook);
+            },
+            remove: (position) => {
+              instances[position] = null;
+            },
+            length: instances.length
+          };
+        })();
+        let arrayPosition = null;
+        let currentValue = null;
 
-  let API = {
-    subscribe: (() => {
-      /*[1] Whenever currentState changes, this method should
-      update all pointers to it with the new value. */
-      const subscriptions = {};
-      let currentState;
-      let unsubscribe;
+        // set the subscription
+        if (!subs.hasOwnProperty(interfaceName)) {
+          subs[interfaceName] = { [reducerName]: callback };
+        }
 
-      //[3] Check for changes and update currentState:
-      const handleChange = () => {
-        const nextState = ClientStore.getState();
+        subs[interfaceName][reducerName] = callback;
 
-        if (nextState !== currentState) {
-          for (let namespace in subscriptions) {
-            const _interface = subscriptions[namespace];
+        // return the subscriptions API:
+        return {
+          subscribe: (cb) => {
+            // Potential issue if 2 hooks are created at the same time?
+            const hook = {
+              remove: () => hooks.remove(hooks.length),
+              cb
+            };
 
-            for (let reducer in _interface) { // Assign new state to subscription:
-              _interface[reducer] = nextState[namespace][reducer];
+            hooks.add(hook);
+
+            // populate with existing state:
+            cb(ClientStore.getState()[interfaceName][reducerName]);
+
+            return hook;
+          },
+          update: (changes) => {
+            const nextState = changes[interfaceName][reducerName];
+
+            if (currentValue !== nextState) {
+              currentValue = nextState;
+              hooks.get().forEach((hook) => {
+                if (hook) {
+                  // give it the new value:
+                  hook.cb(nextState);
+                }
+              });
             }
           }
-          currentState = nextState;
-        }
-      };
+        };
+      },
+      update: (changesFromStore) => {
+        for (let namespace in subs) {
+          const Interface = subs[namespace];
 
-      //[2] Subscribe to the store and save the disconnect method:
-      const _connect = (store) => {
-        unsubscribe = store.subscribe(handleChange); // returns: unsubscribe();
-      };
-
-      return {
-        connectStore: _connect,
-        addSub: (name, reducer) => {
-          if (!subscriptions[name]) {
-            subscriptions[name] = { [reducer]: ClientStore.getState()[name][reducer] };
-            return subscriptions[name];
+          for (let reducer in Interface) {
+            Interface[reducer](changesFromStore);
           }
-        },
-        removeSub: (namespace, reducer) =>  {
-          if (subscriptions[namespace]) {
-            return delete subscriptions[namespace][reducer];
-          }
-          return "there is no reducer with these inputs to unsubscribe to";
         }
-      };
-    })(),
+      }
+    };
+  })();
+
+  const subscribe = () => {
+    // Check for changes and update currentState:
+    const handleChange = () => {
+      const nextState = ClientStore.getState();
+
+      // on first run:
+      if (!currentState) {
+        currentState = nextState;
+        subscriptions.update(nextState);
+      }
+
+      if (nextState !== currentState) {
+        subscriptions.update(nextState);
+        currentState = nextState;
+      }
+    };
+
+    // Subscribe to the store and save the disconnect method:
+    let unsubscribeCallback;
+    const createSubscriptionToStore = (store) => {
+      unsubscribeCallback = store.subscribe(handleChange); // returns method to unsubscribe;
+    };
+
+    return Object.assign({}, subscriptions, {
+      createSubscriptionToStore,
+      unsubscribeCallback
+    });
+  };
+
+  const API = {
+    subscribe: subscribe(),
     dispatch: (action) => {
       ClientStore.dispatch(action);
     },
@@ -60,18 +122,18 @@ const Store = ((initial = null) => {
     },
     set: (store) => {
       ClientStore = store;
-      _connectStore(store);
+      API.subscribe.createSubscriptionToStore(store);
     }
   };
   return API;
 })();
 
-const Reducer = ((initial = null) => {
+const RootReducer = ((initial = null) => {
   let root_reducer = initial;
   let reducerStore = {};
 
   return {
-    add: (name, input) => {
+    addInterface: (name, input) => {
       // Format the inputs:
       const nextInterface = {[name]: input};
 
@@ -81,52 +143,45 @@ const Reducer = ((initial = null) => {
       // Rebuild the root_reducer:
       return root_reducer = combineReducers(reducerStore);
     },
-    getRoot: () => {
+    get: () => {
       return root_reducer;
     }
   }
 })();
 
-// ====== Reducer Methods: ====== //
-const _getState = (Store, interfaceName, reducer) => eval(`Store.getState().${interfaceName}.${reducer}`);
-
 // ====== Interface Methods: ====== //
-const _mountInterface = (namespace, input) => {
-  if (!RI[namespace]) { // If the interface does not conflict:
+const _mountInterface = (store, interfaceName, input) => {
+  if (!RI[interfaceName]) { // If the interface does not conflict:
 
     let actionsObj = {};
     if (input.actions) { // Build the actions:
       actionsObj = Object.keys(input.actions).reduce((obj, action) => {
-        obj[action] = (...payload) => Store.dispatch(input.actions[action](...payload));
+        obj[action] = (...payload) => store.dispatch(input.actions[action](...payload));
         return obj;
       }, {});
     }
 
     let reducersObj = {};
     if (input.reducers) { // Build the reducers:
-      reducersObj = Object.keys(input.reducers).reduce((obj, reducer) => {
-        obj[reducer] = {
-          getState: () => _getState(Store.get(), namespace, reducer),
-          subscribe: () => Store.subscribe.addSub(namespace, reducer),
-          unsubscribe: () => Store.subscribe.removeSub(namespace, reducer)
-        };
-        return obj;
+      reducersObj = Object.keys(input.reducers).reduce((acc, reducerName) => {
+        acc[reducerName] = new Reducer(store, interfaceName, reducerName);
+        return acc;
       }, {});
 
-      // Mount the reducers:
-      Reducer.add(namespace, combineReducers(input.reducers));
+      // Add the interface's reducers to the RootReducer:
+      RootReducer.addInterface(interfaceName, combineReducers(input.reducers));
     }
 
-    // Build the interface:
-    const nextInterface = { [namespace]: Object.assign(actionsObj, reducersObj) };
-
     // Mount the interface:
-    return RI = Object.assign(RI, nextInterface);
+    return RI = Object.assign({},
+      RI,
+      { [interfaceName]: Object.assign({}, actionsObj, reducersObj) }
+    );
   }
   // If the interface conflicts:
-  const err = { message: `Interface '${namespace}' is already in use. Try a different namespace.` };
-
-  console.log(err.message);
+  console.error(`
+    Interface '${interfaceName}' is already in use. Try a different name for your interface.
+  `);
 
   return err;
 };
@@ -134,7 +189,7 @@ const _mountInterface = (namespace, input) => {
 // ====== Public ====== //
 export let RI = {
   mount: (namespace, input) => {
-    return _mountInterface(namespace, input);
+    return _mountInterface(Store, namespace, input);
   },
   setStore: (input) => {
     return Store.set(input);
@@ -143,6 +198,6 @@ export let RI = {
     return Store.get();
   },
   getRootReducer: () => {
-    return Reducer.getRoot();
+    return RootReducer.get();
   }
 };
