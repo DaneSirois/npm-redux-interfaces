@@ -34,7 +34,7 @@ RI.chatroom.NEW_MESSAGE({ text: 'My message' });
 
 ## Index:
 1. [Installation:](#installation)
-2. [Mirgrating to v3.0.0:](#Migrating-from-v2.0-to-v3.0)
+2. [Mirgrating to v3.0.0:](#migrating-from-v20-to-v30)
 3. [Usage:](#usage)
 4. [Configuration:](#configuration)
 5. [Creating an Interface:](#creating-an-interface)
