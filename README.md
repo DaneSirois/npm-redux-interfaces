@@ -1,13 +1,14 @@
 # Redux-Interfaces
-> The Redux state-management API builder:
+> Domain based Redux architecture and API.
 
-Interfaces manage the logic surrounding both the modification and retrieval of your applications state.
-With them the aim is to reduce Redux boilerplate, while providing cross-repo code reuse/libration.
+Interfaces are wrappers around your Redux actions and reducers that provide an importable API for interacting with your applications state. Interfaces are organized by domain allowing for easier conceptualization of your state. Through the library you can access and subscribe to data directly from your reducers without the need for external bindings. Dispatching actions can be done from anywhere and becomes as simple as a function call.
 
 **Why interfaces?**
 
-- Write *once*, use **anywhere**. Interfaces contain everything they need to exist independently from the rest of your application. They even exist separately from other interfaces. Copy/paste your interface folders for use across repos.
-- **Liberate your state**. Because of their degree of isolation and abstraction, interfaces naturally make your code more maintainable. Since dispatching an action is now done through an API call, there is no longer a need for bindings like `mapDispatchToProps()`.
+- They reduce the amount of boilerplate needed for interacting with your store
+  - Say goodbye to bindings like `mapDistpatchToProps()`
+- They force you to think about the different domains in your app and model your state around them
+- They provide structure around your usage of Redux by giving you an easily repeatable and understandable architecture for adding new actions and reducers
 
 **Examples**:
 ```js
@@ -17,34 +18,38 @@ import { RI } from 'npm-redux-interfaces';
 RI.app.LOADING(true);
 
 // Get the state from the loading reducer:
-RI.app.loading().getState();
+const appIsLoading = RI.app.loading.getState();
 
-// Add a friend to a users friendlist:
-RI.user.ADD_FRIEND({ name: 'Don' });
+// Create a listener on the messages reducer:
+RI.chatroom.messages.listen((changes) => {
+  // Called on every change to the reducer
+});
 
-// Remove that friend:
-RI.user.REMOVE_FRIEND('Don');
+// Add a message to a chatroom:
+RI.chatroom.NEW_MESSAGE({ text: 'My message' });
 ```
--(*See [#Creating-an-interface](#creating-an-interface) for information on how to configure*)
-
-**Note:**
-It's my understanding that this library does **not** currently support server-side rendering.. It's something that I'm looking into.
+- (*See [#Creating-an-interface](#creating-an-interface) for more information on how to configure*)
 
 ## Index:
 1. [Installation:](#installation)
-2. [Usage:](#usage)
-3. [Configuration:](#configuration)
-4. [Creating an Interface:](#creating-an-interface)
-5. [API:](#api)
-6. [Dependencies:](#dependencies)
-7. [Author:](#author)
-8. [License:](#license)
+2. [Mirgrating to v3.0.0:](#Migrating-from-v2.0-to-v3.0)
+3. [Usage:](#usage)
+4. [Configuration:](#configuration)
+5. [Creating an Interface:](#creating-an-interface)
+6. [API:](#api)
+7. [Dependencies:](#dependencies)
+8. [Author:](#author)
+9. [License:](#license)
 
 ***
 ## Installation:
 ```
 npm install --save npm-redux-interfaces
 ```
+
+***
+## Migrating from v2.0 to v3.0:
+- see the [release notes](https://github.com/DaneSirois/npm-redux-interfaces/releases/tag/v3.0.0) for changes
 
 ***
 ## Usage:
@@ -57,7 +62,6 @@ import Chatroom_NEW_MESSAGE from './actions/Chatroom_NEW_MESSAGE.js';
 // Reducers:
 import Chatroom_messages from './reducers/Chatroom_messages.js';
 
-// API:
 export default {
   actions: {
     NEW_MESSAGE: (msg) => Chatroom_NEW_MESSAGE(msg)
@@ -67,7 +71,7 @@ export default {
   }
 };
 ```
--(*See [#Creating-an-interface](#creating-an-interface) for information on how to configure*)
+- (*See [#Creating-an-interface](#creating-an-interface) for more information on how to configure*)
 
 **Connecting an interface**:
 ```js
@@ -77,7 +81,7 @@ import { RI } from 'npm-redux-interfaces';
 import Chatroom_interface from './Chatroom/Chatroom_index';
 
 // Mount your interfaces:
-RI.mountInterface('chatroom', Chatroom_interface);
+RI.mount('chatroom', Chatroom_interface);
 
 // Export the root_reducer:
 export const root_reducer = RI.getRootReducer();
@@ -87,16 +91,18 @@ export const root_reducer = RI.getRootReducer();
 ```js
 import { RI } from 'npm-redux-interfaces';
 
-// Dispatching an action:
-RI.chatroom.NEW_MESSAGE({ text: 'cool!' });
+RI.chatroom.NEW_MESSAGE({ text: 'Cool!' });
 ```
 
-**Accessing reducers:**
+**Accessing state from reducers:**
 ```js
 import { RI } from 'npm-redux-interfaces';
 
-// Accessing a reducer:
-const messages = RI.chatroom.messages().getState();
+const messages = RI.chatroom.messages.getState();
+
+RI.chatroom.messages.listen((changes) => {
+  // Called on every state change in the reducer
+});
 ```
 
 ***
@@ -106,7 +112,7 @@ const messages = RI.chatroom.messages().getState();
 
 [2]: Create an **index.js** file within the new **interfaces** folder. This file is where you will make the connection between your interfaces and the library. At the end of this file, export the **root_reducer**.
 
-**[/interfaces/index.js]:**
+**[ src/interfaces/index.js ]:**
 ```js
 import { RI } from 'npm-redux-interfaces';
 
@@ -114,16 +120,15 @@ import { RI } from 'npm-redux-interfaces';
 import Chatroom_interface from './Chatroom/Chatroom_index';
 
 // Mount your interfaces:
-RI.mountInterface('chatroom', Chatroom_interface);
+RI.mount('chatroom', Chatroom_interface);
 
 // Export the root_reducer:
 export const root_reducer = RI.getRootReducer();
 ```
--(*See [#Creating-an-interface](#creating-an-interface) for information on how to create an interface*)
 
 [3]: Navigate to your apps root level **index.js** file and create the store. Immediately after definition, pass in reference to it with `RI.setStore()`.
 
-**[/index.js]:**
+**[ src/index.js ]:**
 ```js
 import { RI } from 'npm-redux-interfaces';
 import { root_reducer } from './interfaces/index.js';
@@ -143,34 +148,36 @@ Your app is now configured to mount interfaces.
 - *It's convention to capitalize the first letter of the interfaces name (ex: **Chatroom**)*.
 
 [2]: Inside of this new folder, create a **types** file:
-- *It's convention to name your constants with capitals.*
+- *It's convention to name your constants with the name of the interface appended with the type in all capitals.*
 
-**[/interfaces/Chatroom/Chatroom_types.js]:**
+**[ src/interfaces/Chatroom/Chatroom_types.js ]:**
 ```js
-export const type__NEW_MESSAGE = 'type__NEW_MESSAGE';
+export const Chatroom_NEW_MESSAGE = 'Chatroom_NEW_MESSAGE';
 ```
 
 [3]: Create subfolders for your **actions** and **reducers**:
 
-**[/interfaces/Chatroom/actions/Chatroom_NEW_MESSAGE.js]:**
+**[ src/interfaces/Chatroom/actions/Chatroom_NEW_MESSAGE.js ]:**
 ```js
-import { type__NEW_MESSAGE } from '../Chatroom_types.js';
+import { Chatroom_NEW_MESSAGE } from '../Chatroom_types.js';
 
-export default (msg) => {
+export default (message) => {
   return {
-    type: type__NEW_MESSAGE,
-    payload: msg
+    type: Chatroom_NEW_MESSAGE,
+    payload: {
+      message
+    }
   };
 };
 ```
 
-**[/interfaces/Chatroom/reducers/Chatroom_messages.js]:**
+**[ src/interfaces/Chatroom/reducers/Chatroom_messages.js ]:**
 ```js
-import { type__NEW_MESSAGE } from '../Chatroom_types.js';
+import { Chatroom_NEW_MESSAGE } from '../Chatroom_types.js';
 
 export default (state = [], action) => {
   switch(action.type) {
-    case type__NEW_MESSAGE:
+    case Chatroom_NEW_MESSAGE:
       return state.concat([action.payload]);
     default:
       return state;
@@ -180,10 +187,10 @@ export default (state = [], action) => {
 
 [4]: Create the entry point for your interface. This is where you build and expose it's public facing API.
 
-- *This file **must** export an object that contains the keys **actions**, and **reducers**. It's okay to omit either key, but do know that their presence is required if you wish to use that part of your interface.*
+- *This file **must** export an object that contains the keys **actions**, and **reducers**. It's okay to omit either key, but know that their presence is required if you wish to use that part of your interface.*
 - *Your actions **must** be named in all caps. This is what differentiates them from your reducers.*
 
-**[/interfaces/Chatroom/Chatroom_index.js]:**
+**[ src/interfaces/Chatroom/Chatroom_index.js ]:**
 ```js
 // Actions:
 import Chatroom_NEW_MESSAGE from './actions/Chatroom_NEW_MESSAGE.js';
@@ -208,12 +215,9 @@ If you followed all of the steps correctly, you should now how have a directory 
 
 ***
 ## API:
-## RI.mountInterface([*string*], [*object*]):
+## RI.mount([*string*], [*object*]):
 This method mounts your interface into to the library giving you access to it's internal API.
 - As convention, namespace your interfaces using lowercase.
-
-
-**Note**: I am most likely renaming this to just `RI.mount()` in version 3. I feel like it's more intuitive.
 
 **Arguments**([*1*], [*2*]):
 
@@ -226,14 +230,9 @@ This method mounts your interface into to the library giving you access to it's 
 
 **Example**:
 ```js
-RI.mountInterface('chatroom', Chatroom_interface);
+RI.mount('chatroom', Chatroom_interface);
 ```
 
-***
-## RI.connectInterface([*string*], [*object*]):
-- **This method is being replaced by `RI.mount()` in v3.**
-
-This still works for now, but it will be removed in version 3.
 ***
 ## RI.getRootReducer():
 This method returns the *root_reducer* for your app.
@@ -276,7 +275,7 @@ This method returns the store object initially passed in from the `RI.setStore()
 
 **Example**:
 ```js
-const reduxStore = RI.getStore()
+const reduxStore = RI.getStore();
 ```
 
 ***
