@@ -106,6 +106,11 @@ const messages = RI.chatroom.messages.getState();
 RI.chatroom.messages.listen((changes) => {
   // Called on every state change in the reducer
 });
+
+// Pass optional prop to reducer lister to set number of calls:
+RI.chatroom.messages.listen((changes) => { ... }, {
+  numberOfCalls: 2
+});
 ```
 
 ***

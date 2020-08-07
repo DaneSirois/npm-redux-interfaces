@@ -11,7 +11,7 @@ const Store = ((initial = null) => {
    * an API to be used to add new listner hooks and to update
    * the existing ones with new state.
    */
-  const createReducerListener = (interfaceName, reducerName, callback) => {
+  const createReducerListener = (interfaceName, reducerName) => {
     let currentValueInReducer = null;
 
     /**
@@ -36,7 +36,7 @@ const Store = ((initial = null) => {
             instances[position] = null;
           }
         },
-        length: instances.length
+        length: () => instances.length
       };
     })();
 
@@ -49,7 +49,12 @@ const Store = ((initial = null) => {
             // Update every listener hook with the new value:
             hooks.getAll().forEach((listener) => {
               if (listener) {
-                listener.callback(nextReducerState);
+                if (listener.numberOfCalls && listener.currentCalls === listener.numberOfCalls) {
+                  listener.remove();
+                } else {
+                  listener.callback(nextReducerState);
+                  listener.currentCalls = listener.currentCalls + 1;
+                }
               }
             });
           };
@@ -72,7 +77,7 @@ const Store = ((initial = null) => {
             updateHooks();
           }
         },
-        addListenerHook: (callback) => {
+        addListenerHook: (callback, params = {}) => {
           /**
            * addListenerHook
            *
@@ -83,16 +88,18 @@ const Store = ((initial = null) => {
           const listenerHookPosition = hooks.length();
 
           const listenerHook = {
-            remove: () => hooks.remove(hooks.length),
-            callback
+            callback,
+            numberOfCalls: params.numberOfCalls || null,
+            currentCalls: 0,
+            remove: () => {
+              hooks.remove(listenerHookPosition);
+            }
           };
 
           hooks.add(listenerHook);
 
           return {
-            remove: () => {
-              hooks.remove(listenerHookPosition);
-            }
+            remove: listenerHook.remove
           };
         }
       }
@@ -111,7 +118,7 @@ const Store = ((initial = null) => {
     const subscriptions = {};
 
     return {
-      listen: (interfaceName, reducerName, callback) => {
+      listen: (interfaceName, reducerName, callback, params) => {
         /**
          * This function is executed in the context of a
          * new listener being added to a reducer subscription.
@@ -124,12 +131,11 @@ const Store = ((initial = null) => {
           // subscriptions, instantiate the first one:
           subscriptions[interfaceName] = createReducerListener(
             interfaceName,
-            reducerName,
-            callback
+            reducerName
           );
 
           publicListenerHookMethods = (
-            subscriptions[interfaceName][reducerName].addListenerHook(callback)
+            subscriptions[interfaceName][reducerName].addListenerHook(callback, params)
           );
         } else if (
           subscriptions.hasOwnProperty(interfaceName) &&
@@ -148,14 +154,14 @@ const Store = ((initial = null) => {
           );
 
           publicListenerHookMethods = (
-            subscriptions[interfaceName][reducerName].addListenerHook(callback)
+            subscriptions[interfaceName][reducerName].addListenerHook(callback, params)
           );
         } else {
           // if the interface already has a subscription and
           // the reducer already has a listener, add a new
           // listener hook:
           publicListenerHookMethods = (
-            subscriptions[interfaceName][reducerName].addListenerHook(callback)
+            subscriptions[interfaceName][reducerName].addListenerHook(callback, params)
           )
         }
 
@@ -235,7 +241,7 @@ const Store = ((initial = null) => {
 
 const Reducer = (store, interfaceName, reducerName) => ({
   getState: () => eval(`store.get().getState().${interfaceName}.${reducerName}`),
-  listen: (callback) => store.subscribe.listen(interfaceName, reducerName, callback)
+  listen: (callback, params) => store.subscribe.listen(interfaceName, reducerName, callback, params)
 });
 
 const RootReducer = ((initial = null) => {
