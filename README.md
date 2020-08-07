@@ -196,23 +196,23 @@ export default (state = false, action) => {
 
 **[ src/interfaces/Chatroom/Chatroom_index.js ]:**
 ```js
-import App_RENDER from './actions/App_RENDER.js';
+import Chatroom_NEW_MESSAGE from './actions/Chatroom_NEW_MESSAGE.js';
 
-import App_render from './reducers/App_render.js';
+import Chatroom_messages from './reducers/Chatroom_messages.js';
 
 export default {
   actions: {
-    RENDER: (bool) => App_RENDER(bool)
+    NEW_MESSAGE: (message) => Chatroom_NEW_MESSAGE(message)
   },
   reducers: {
-    render: App_render
+    messages: Chatroom_messages
   }
 };
 ```
 
 **If you followed all of the steps correctly, you should now how have a directory which mimics the following**:
 
-![Chatroom_interface](http://imgur.com/hLjLGAw.png)
+![Chatroom_interface](https://i.imgur.com/I6pANw7.png)
 
 ***
 ## API:
