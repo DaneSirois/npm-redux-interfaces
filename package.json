@@ -1,6 +1,6 @@
 {
   "name": "npm-redux-interfaces",
-  "version": "2.3.4",
+  "version": "3.0.1",
   "description": "A Redux state management architecture/API",
   "main": "lib/index.js",
   "scripts": {

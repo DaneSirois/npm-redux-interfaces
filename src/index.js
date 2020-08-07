@@ -32,7 +32,9 @@ const Store = ((initial = null) => {
           instances.push(hook);
         },
         remove: (position) => {
-          instances[position] = null;
+          if (instances[position]) {
+            instances[position] = null;
+          }
         },
         length: instances.length
       };
@@ -78,6 +80,7 @@ const Store = ((initial = null) => {
            * the `callback` argument is what gets called internally
            * to update the listener with the new state on change.
            */
+          const listenerHookPosition = hooks.length();
 
           const listenerHook = {
             remove: () => hooks.remove(hooks.length),
@@ -86,11 +89,10 @@ const Store = ((initial = null) => {
 
           hooks.add(listenerHook);
 
-          // populate with existing state:
-          callback(ClientStore.getState()[interfaceName][reducerName]);
-
           return {
-            remove: listenerHook.remove
+            remove: () => {
+              hooks.remove(listenerHookPosition);
+            }
           };
         }
       }
