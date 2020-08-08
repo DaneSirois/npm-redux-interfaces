@@ -225,7 +225,7 @@ const Store = ((initial = null) => {
   const StoreAPI = {
     subscribe: subscribe(),
     dispatch: (action) => {
-      ClientStore.dispatch(action);
+      return ClientStore.dispatch(action);
     },
     get: () => {
       return ClientStore;
