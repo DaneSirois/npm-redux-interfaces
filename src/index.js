@@ -43,39 +43,30 @@ const Store = ((initial = null) => {
     return {
       [reducerName]: {
         updateListeners: (newState) => {
-          const updateHooks = () => {
-            currentValueInReducer = nextReducerState;
+          const nextReducerState = newState[interfaceName][reducerName];
+          const dataTypeOfNextState = typeof nextReducerState;
+          const dataTypeOfCurrentState = typeof currentValueInReducer;
 
-            // Update every listener hook with the new value:
-            hooks.getAll().forEach((listener) => {
-              if (listener) {
-                if (listener.numberOfCalls && listener.currentCalls === listener.numberOfCalls) {
-                  listener.remove();
-                } else {
+          const dataHasChanged = (
+            dataTypeOfNextState !== dataTypeOfCurrentState ||
+            JSON.stringify(nextReducerState) !== JSON.stringify(currentValueInReducer)
+          );
+
+          // Update every listener hook with the new value:
+          hooks.getAll().forEach((listener) => {
+            if (listener) {
+              if (listener.numberOfCalls && listener.currentCalls === listener.numberOfCalls) {
+                listener.remove();
+              } else {
+                if (listener.alwaysUpdate || dataHasChanged) {
                   listener.callback(nextReducerState);
                   listener.currentCalls = listener.currentCalls + 1;
                 }
               }
-            });
-          };
+            }
+          });
 
-          const nextReducerState = newState[interfaceName][reducerName];
-
-          const dataTypeOfNextState = typeof nextReducerState;
-          const dataTypeOfCurrentState = typeof currentValueInReducer;
-
-          /**
-           * JSON.stringify works here because the order of
-           * arrays or objects should not change by Redux. If it
-           * does change then we want it to update the hooks.
-           */
-          if (
-            dataTypeOfNextState !== dataTypeOfCurrentState ||
-            JSON.stringify(nextReducerState) !== JSON.stringify(currentValueInReducer)
-          ) {
-            // If the data has changed we need to update:
-            updateHooks();
-          }
+          currentValueInReducer = nextReducerState;
         },
         addListenerHook: (callback, params = {}) => {
           /**
@@ -90,6 +81,7 @@ const Store = ((initial = null) => {
           const listenerHook = {
             callback,
             numberOfCalls: params.numberOfCalls || null,
+            alwaysUpdate: params.alwaysUpdate || null,
             currentCalls: 0,
             remove: () => {
               hooks.remove(listenerHookPosition);
