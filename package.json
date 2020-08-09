@@ -1,6 +1,6 @@
 {
   "name": "npm-redux-interfaces",
-  "version": "3.1.1",
+  "version": "3.2.0",
   "description": "Domain based Redux architecture and API",
   "main": "lib/index.js",
   "scripts": {
