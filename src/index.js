@@ -59,8 +59,10 @@ const Store = ((initial = null) => {
                 listener.remove();
               } else {
                 if (listener.alwaysUpdate || dataHasChanged) {
-                  listener.callback(nextReducerState);
-                  listener.currentCalls = listener.currentCalls + 1;
+                  if (listener.actions && listener.actions.includes(newState._RI.lastAction.type)) {
+                    listener.callback(nextReducerState);
+                    listener.currentCalls = listener.currentCalls + 1;
+                  }
                 }
               }
             }
@@ -68,7 +70,7 @@ const Store = ((initial = null) => {
 
           currentValueInReducer = nextReducerState;
         },
-        addListenerHook: (callback, params = {}) => {
+        addListenerHook: (callback, params = {}, actions) => {
           /**
            * addListenerHook
            *
@@ -83,6 +85,7 @@ const Store = ((initial = null) => {
             numberOfCalls: params.numberOfCalls || null,
             alwaysUpdate: params.alwaysUpdate || null,
             currentCalls: 0,
+            actions: actions || null,
             remove: () => {
               hooks.remove(listenerHookPosition);
             }
@@ -110,7 +113,7 @@ const Store = ((initial = null) => {
     const subscriptions = {};
 
     return {
-      listen: (interfaceName, reducerName, callback, params) => {
+      listen: (interfaceName, reducerName, callback, params, actions) => {
         /**
          * This function is executed in the context of a
          * new listener being added to a reducer subscription.
@@ -127,7 +130,7 @@ const Store = ((initial = null) => {
           );
 
           publicListenerHookMethods = (
-            subscriptions[interfaceName][reducerName].addListenerHook(callback, params)
+            subscriptions[interfaceName][reducerName].addListenerHook(callback, params, actions)
           );
         } else if (
           subscriptions.hasOwnProperty(interfaceName) &&
@@ -146,14 +149,14 @@ const Store = ((initial = null) => {
           );
 
           publicListenerHookMethods = (
-            subscriptions[interfaceName][reducerName].addListenerHook(callback, params)
+            subscriptions[interfaceName][reducerName].addListenerHook(callback, params, actions)
           );
         } else {
           // if the interface already has a subscription and
           // the reducer already has a listener, add a new
           // listener hook:
           publicListenerHookMethods = (
-            subscriptions[interfaceName][reducerName].addListenerHook(callback, params)
+            subscriptions[interfaceName][reducerName].addListenerHook(callback, params, actions)
           )
         }
 
@@ -233,7 +236,13 @@ const Store = ((initial = null) => {
 
 const Reducer = (store, interfaceName, reducerName) => ({
   getState: () => eval(`store.get().getState().${interfaceName}.${reducerName}`),
-  listen: (callback, params) => store.subscribe.listen(interfaceName, reducerName, callback, params)
+  listen: (callback, params, actions) => store.subscribe.listen(
+    interfaceName,
+    reducerName,
+    callback,
+    params,
+    actions
+  )
 });
 
 const RootReducer = ((initial = null) => {
@@ -310,3 +319,11 @@ export let RI = {
     return RootReducer.get();
   }
 };
+
+RI.mount('_RI', {
+  reducers: {
+    lastAction: (state, action) => {
+      return action
+    }
+  }
+});
