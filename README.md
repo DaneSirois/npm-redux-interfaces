@@ -25,7 +25,10 @@ const appIsLoading = RI.app.loading.getState();
 // Create a listener on the messages reducer:
 RI.chatroom.messages.listen((changes) => {
   // Called on every change to the reducer
-});
+  // made with the 'Chatroom_NEW_MESSAGE' action
+}, {}, [
+  'Chatroom_NEW_MESSAGE'
+]);
 
 // Add a message to a chatroom:
 RI.chatroom.NEW_MESSAGE({ text: 'My message' });
@@ -103,14 +106,29 @@ import { RI } from 'npm-redux-interfaces';
 
 const messages = RI.chatroom.messages.getState();
 
+// Create a listener for a reducer and choose which actions should
+// trigger the updates:
 RI.chatroom.messages.listen((changes) => {
   // Called on every state change in the reducer
-});
+}, {}, [
+  'Chatroom_NEW_MESSAGE'
+]);
 
-// Pass optional prop to reducer lister to set number of calls:
+// Pass optional prop to reducer listener to set number of calls:
 RI.chatroom.messages.listen((changes) => { ... }, {
   numberOfCalls: 2
-});
+}, [
+  'Chatroom_NEW_MESSAGE'
+]);
+
+// Pass optional prop to reducer listener to make it
+// always update. The default behaviour is it will
+// only update when the data changes.
+RI.chatroom.messages.listen((changes) => { ... }, {
+  alwaysUpdate: true
+}, [
+  'Chatroom_NEW_MESSAGE'
+]);
 ```
 
 ***
