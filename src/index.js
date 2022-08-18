@@ -301,8 +301,6 @@ const mountInterface = (store, interfaceName, input) => {
   console.error(`
     Interface '${interfaceName}' is already in use. Try a different name for your interface.
   `);
-
-  return err;
 };
 
 export let RI = {
